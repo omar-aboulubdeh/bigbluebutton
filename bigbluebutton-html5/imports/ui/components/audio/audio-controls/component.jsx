@@ -7,11 +7,18 @@ import getFromUserSettings from '/imports/ui/services/users-settings';
 import withShortcutHelper from '/imports/ui/components/shortcut-help/service';
 import MutedAlert from '/imports/ui/components/muted-alert/component';
 import { styles } from './styles';
+import Auth from '/imports/ui/services/auth';
+import Users from '/imports/api/users';
+import { makeCall } from '/imports/ui/services/api';
 
 const intlMessages = defineMessages({
   joinAudio: {
     id: 'app.audio.joinAudio',
     description: 'Join audio button label',
+  },
+  raiseHand: {
+    id: 'app.actionsBar.emojiMenu.raiseHandDesc',
+    description: 'Raise Hand button label',
   },
   leaveAudio: {
     id: 'app.audio.leaveAudio',
@@ -26,7 +33,7 @@ const intlMessages = defineMessages({
     description: 'Unmute audio button label',
   },
 });
-
+const getEmoji = () => Users.findOne({ userId: Auth.userID }, { fields: { emoji: 1 } }).emoji;
 const propTypes = {
   processToggleMuteFromOutside: PropTypes.func.isRequired,
   handleToggleMuteMicrophone: PropTypes.func.isRequired,
@@ -42,7 +49,22 @@ const propTypes = {
 };
 
 class AudioControls extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = { raised: false };
+  }
+  raiseMyHand = () => {
+    if (getEmoji() == 'raiseHand') {
+      this.setState({ raised: false });
+      makeCall('setEmojiStatus', Auth.userID, 'none');
+    } else {
+      this.setState({ raised: true });
+      makeCall('setEmojiStatus', Auth.userID, 'raiseHand');
+    }
+    // this.props.setEmojiStatus(Auth.userId, 'raiseHand');
+  };
   componentDidMount() {
+    this.state.raised = getEmoji() === 'raiseHand';
     const { processToggleMuteFromOutside } = this.props;
     if (Meteor.settings.public.allowOutsideCommands.toggleSelfVoice
       || getFromUserSettings('bbb_outside_toggle_self_voice', false)) {
@@ -103,6 +125,21 @@ class AudioControls extends PureComponent {
 
     return (
       <span className={styles.container}>
+        <Button
+          className={cx(styles.button, this.state.raised || styles.btn)}
+          style={{marginRight :'1.5rem' }}
+          onClick={this.raiseMyHand}
+          disabled={!inAudio}
+          hideLabel
+          label={intl.formatMessage(intlMessages.raiseHand)}
+          aria-label={intl.formatMessage(intlMessages.raiseHand)}
+          color={this.state.raised ? 'primary' : 'default'}
+          ghost={!this.state.raised}
+          icon={'hand'}
+          size="lg"
+          circle
+        />
+
         {inputStream && muteAlertEnabled ? (
           <MutedAlert {...{
             muted, inputStream, isViewer, isPresenter,
