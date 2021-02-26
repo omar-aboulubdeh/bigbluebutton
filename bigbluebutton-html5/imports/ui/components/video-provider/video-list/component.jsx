@@ -309,6 +309,7 @@ class VideoList extends Component {
       const isFocused = focusedId === cameraId;
       const isFocusedIntlKey = !isFocused ? 'focus' : 'unfocus';
       const isMirrored = this.cameraIsMirrored(cameraId);
+
       let actions = [{
         actionName: ACTION_NAME_MIRROR,
         label: intl.formatMessage(intlMessages['mirrorLabel']),
@@ -351,6 +352,25 @@ class VideoList extends Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    const {
+      streams,
+      talker
+    } = this.props;
+    const { focusedId } = this.state;
+    const numOfStreams = streams.length;
+    const prevTalker = prevProps.talker;
+    if (numOfStreams < 3 || !talker || (prevTalker && talker.intId === prevTalker.intId)) return;
+    if (talker)
+      streams.forEach((stream) => {
+        const { cameraId, userId } = stream;
+        if (userId === talker.intId) {
+          // here is my magic :D
+          if (focusedId != cameraId)
+            this.handleVideoFocus(cameraId);
+        }
+      });
+  }
   render() {
     const { streams, intl } = this.props;
     const { optimalGrid, autoplayBlocked } = this.state;

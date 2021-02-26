@@ -4,16 +4,16 @@ public:
     desktopFontSize: 14px
     audioChatNotification: false
     autoJoin: true
-    listenOnlyMode: true
+    listenOnlyMode: false
     forceListenOnly: false
-    skipCheck: false
+    skipCheck: true
     skipCheckOnJoin: false
-    clientTitle: BigBlueButton
-    appName: BigBlueButton HTML5 Client
+    clientTitle: MartMG
+    appName: MartMG
     bbbServerVersion: 2.3-dev
-    copyright: '©2021 BigBlueButton Inc.'
+    copyright: "©2020 MartMG"
     html5ClientBuild: HTML5_CLIENT_VERSION
-    helpLink: https://bigbluebutton.org/html5/
+    helpLink: http://smartvideoexchange.com/
     lockOnJoin: true
     cdn: ''
     basename: '/html5client'
@@ -129,7 +129,7 @@ public:
     enableNetworkMonitoring: false
     packetLostThreshold: 10
   kurento:
-    wsUrl: HOST
+    wsUrl: wss://miami.smartvideoexchange.com/bbb-webrtc-sfu
     # Valid for video-provider. Time (ms) before its WS connection times out
     # and tries to reconnect.
     wsConnectionTimeout: 4000
@@ -241,8 +241,8 @@ public:
     enableVideo: true
     enableVideoMenu: true
     enableListenOnly: true
-    autoShareWebcam: false
-    skipVideoPreview: false
+    autoShareWebcam: true 
+    skipVideoPreview: true
     skipVideoPreviewOnFirstJoin: false
     # Entry `thresholds` is an array of:
     # - threshold: minimum number of cameras being shared for profile to applied
@@ -298,7 +298,7 @@ public:
     lines: 2
     time: 5000
   chat:
-    enabled: true
+    enabled: false
     bufferChatInsertsMs: 0
     startClosed: false
     min_message_length: 1
@@ -329,8 +329,8 @@ public:
       showControls: true
       rtl: false
   layout:
-    autoSwapLayout: false
-    hidePresentation: false
+    autoSwapLayout: true
+    hidePresentation: true
     showParticipantsOnLogin: true
     webcamsDefaultPlacement: 'top'
   media:
