@@ -27,6 +27,7 @@ import { withDraggableContext } from '../media/webcam-draggable-overlay/context'
 import { styles } from './styles';
 import { makeCall } from '/imports/ui/services/api';
 import { NAVBAR_HEIGHT } from '/imports/ui/components/layout/layout-manager';
+import Users from '/imports/api/users';
 
 const MOBILE_MEDIA = 'only screen and (max-width: 40em)';
 const APP_CONFIG = Meteor.settings.public.app;
@@ -172,7 +173,7 @@ class App extends Component {
 
     if (prevProps.currentUserEmoji.status !== currentUserEmoji.status) {
       const formattedEmojiStatus = intl.formatMessage({ id: `app.actionsBar.emojiMenu.${currentUserEmoji.status}Label` })
-      || currentUserEmoji.status;
+        || currentUserEmoji.status;
 
       notify(
         currentUserEmoji.status === 'none'
@@ -224,18 +225,22 @@ class App extends Component {
 
   renderPanel() {
     const { enableResize } = this.state;
-    const { openPanel, isRTL } = this.props;
+    const { openPanel, isRTL, currentUserId } = this.props;
+    const currentUser = Users.findOne({ userId: currentUserId }, { fields: { approved: 1, emoji: 1, userId: 1, role: 1 } });
+    const ROLE_MODERATOR = Meteor.settings.public.user.role_moderator;
 
-    return (
-      <PanelManager
-        {...{
-          openPanel,
-          enableResize,
-          isRTL,
-        }}
-        shouldAriaHide={this.shouldAriaHide}
-      />
-    );
+    if (currentUser.role == ROLE_MODERATOR)
+      return (
+        <PanelManager
+          {...{
+            openPanel,
+            enableResize,
+            isRTL,
+          }}
+          shouldAriaHide={this.shouldAriaHide}
+        />
+      );
+    else return '';
   }
 
   renderNavBar() {
