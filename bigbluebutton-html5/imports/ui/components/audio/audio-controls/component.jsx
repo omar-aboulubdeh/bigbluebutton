@@ -147,7 +147,7 @@ class AudioControls extends PureComponent {
           />
         ) : null}
         {showMute && isVoiceUser ? toggleMuteBtn : null}
-        <Button
+        {/* <Button
           className={cx(inAudio || styles.btn)}
           onClick={inAudio ? handleLeaveAudio : handleJoinAudio}
           disabled={disable}
@@ -163,7 +163,7 @@ class AudioControls extends PureComponent {
           size="lg"
           circle
           accessKey={inAudio ? shortcuts.leaveaudio : shortcuts.joinaudio}
-        />
+        /> */}
       </span>
     );
   }

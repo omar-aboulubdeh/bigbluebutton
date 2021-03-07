@@ -260,17 +260,17 @@ class SettingsDropdown extends PureComponent {
         onClick={() => mountModal(<ShortcutHelpComponent />)}
       />),
       (isMeteorConnected ? <DropdownListSeparator key={_.uniqueId('list-separator-')} /> : null),
-      allowedToEndMeeting && isMeteorConnected
-        ? (<DropdownListItem
-          key="list-item-end-meeting"
-          icon="application"
-          label={intl.formatMessage(intlMessages.endMeetingLabel)}
-          description={intl.formatMessage(intlMessages.endMeetingDesc)}
-          onClick={() => mountModal(<EndMeetingConfirmationContainer />)}
-        />
-        )
-        : null,
-      shouldRenderLogoutOption,
+      // allowedToEndMeeting && isMeteorConnected
+      //   ? (<DropdownListItem
+      //     key="list-item-end-meeting"
+      //     icon="application"
+      //     label={intl.formatMessage(intlMessages.endMeetingLabel)}
+      //     description={intl.formatMessage(intlMessages.endMeetingDesc)}
+      //     onClick={() => mountModal(<EndMeetingConfirmationContainer />)}
+      //   />
+      //   )
+      //   : null,
+      // shouldRenderLogoutOption,
     ]);
   }
 

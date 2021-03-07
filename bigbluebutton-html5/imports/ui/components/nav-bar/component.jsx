@@ -12,8 +12,13 @@ import Button from '/imports/ui/components/button/component';
 import RecordingIndicator from './recording-indicator/container';
 import TalkingIndicatorContainer from '/imports/ui/components/nav-bar/talking-indicator/container';
 import SettingsDropdownContainer from './settings-dropdown/container';
+import { makeCall } from '/imports/ui/services/api';
 
 const intlMessages = defineMessages({
+  leaveSessionLabel: {
+    id: 'app.navBar.settingsDropdown.leaveSessionLabel',
+    description: 'Leave session button label',
+  },
   toggleUserListLabel: {
     id: 'app.navBar.userListToggleBtnLabel',
     description: 'Toggle button label',
@@ -52,7 +57,13 @@ class NavBar extends Component {
 
     window.dispatchEvent(new Event('panelChanged'));
   }
-
+  static leaveSession() {
+    makeCall('userLeftMeeting');
+    // we don't check askForFeedbackOnLogout here,
+    // it is checked in meeting-ended component
+    Session.set('codeError', '680');
+    // mountModal(<MeetingEndedComponent code={LOGOUT_CODE} />);
+  }
   componentDidMount() {
     const {
       processOutsideToggleRecording,
@@ -94,27 +105,42 @@ class NavBar extends Component {
         className={styles.navbar}
       >
         <div className={styles.top}>
+          {amIModerator ?
+            <div className={styles.left}>
+              {!isExpanded ? null
+                : <Icon iconName="left_arrow" className={styles.arrowLeft} />
+              }
+              <Button
+                data-test="userListToggleButton"
+                onClick={NavBar.handleToggleUserList}
+                ghost
+                circle
+                hideLabel
+                data-test={hasUnreadMessages ? 'hasUnreadMessages' : null}
+                label={intl.formatMessage(intlMessages.toggleUserListLabel)}
+                aria-label={ariaLabel}
+                icon="user"
+                className={cx(toggleBtnClasses)}
+                aria-expanded={isExpanded}
+                accessKey={TOGGLE_USERLIST_AK}
+              />
+              {isExpanded ? null
+                : <Icon iconName="right_arrow" className={styles.arrowRight} />
+              }
+            </div>
+            : null}
+
           <div className={styles.left}>
-            {!isExpanded ? null
-              : <Icon iconName="left_arrow" className={styles.arrowLeft} />
-            }
             <Button
-              data-test="userListToggleButton"
-              onClick={NavBar.handleToggleUserList}
+              onClick={NavBar.leaveSession}
               ghost
               circle
               hideLabel
-              data-test={hasUnreadMessages ? 'hasUnreadMessages' : null}
-              label={intl.formatMessage(intlMessages.toggleUserListLabel)}
-              aria-label={ariaLabel}
-              icon="user"
+              label={intl.formatMessage(intlMessages.leaveSessionLabel)}
+              aria-label={intl.formatMessage(intlMessages.leaveSessionLabel)}
+              icon="logout"
               className={cx(toggleBtnClasses)}
-              aria-expanded={isExpanded}
-              accessKey={TOGGLE_USERLIST_AK}
             />
-            {isExpanded ? null
-              : <Icon iconName="right_arrow" className={styles.arrowRight} />
-            }
           </div>
           <div className={styles.center}>
             <h1 className={styles.presentationTitle}>{presentationTitle}</h1>

@@ -88,14 +88,15 @@ class ActionsBar extends PureComponent {
           />
         </div>
         <div className={styles.right}>
-          {isLayoutSwapped
-            ? (
-              <PresentationOptionsContainer
-                toggleSwapLayout={toggleSwapLayout}
-                isThereCurrentPresentation={isThereCurrentPresentation}
-              />
-            )
-            : null
+          { null
+          // isLayoutSwapped
+            // ? (
+              // <PresentationOptionsContainer
+                // toggleSwapLayout={toggleSwapLayout}
+                // isThereCurrentPresentation={isThereCurrentPresentation}
+              // />
+            // )
+            // : null
           }
         </div>
       </div>
