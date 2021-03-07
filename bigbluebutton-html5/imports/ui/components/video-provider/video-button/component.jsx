@@ -49,11 +49,10 @@ const propTypes = {
 
 const JoinVideoButton = ({
   intl,
-  hasVideoStream,
   disableReason,
   mountVideoPreview,
 }) => {
-  const exitVideo = () => hasVideoStream && !VideoService.isMultipleCamerasEnabled();
+  const exitVideo = () => VideoService.hasVideoStream() && !VideoService.isMultipleCamerasEnabled();
 
   const handleOnClick = debounce(() => {
     if (!validIOSVersion()) {
@@ -76,13 +75,13 @@ const JoinVideoButton = ({
   return (
     <Button
       label={label}
-      data-test={hasVideoStream ? 'leaveVideo' : 'joinVideo'}
-      className={cx(hasVideoStream || styles.btn)}
+      data-test={VideoService.hasVideoStream() ? 'leaveVideo' : 'joinVideo'}
+      className={cx(VideoService.hasVideoStream() || styles.btn)}
       onClick={handleOnClick}
       hideLabel
-      color={hasVideoStream ? 'primary' : 'default'}
-      icon={hasVideoStream ? 'video' : 'video_off'}
-      ghost={!hasVideoStream}
+      color={VideoService.hasVideoStream() ? 'primary' : 'default'}
+      icon={VideoService.hasVideoStream() ? 'video' : 'video_off'}
+      ghost={!VideoService.hasVideoStream()}
       size="lg"
       circle
       disabled={!!disableReason}

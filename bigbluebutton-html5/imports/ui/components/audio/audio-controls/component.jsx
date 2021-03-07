@@ -52,7 +52,7 @@ class AudioControls extends PureComponent {
   constructor(props) {
     super(props);
     this.state = { raised: false };
-  }
+  } 
   raiseMyHand = () => {
     if (getEmoji() == 'raiseHand') {
       this.setState({ raised: false });
@@ -71,7 +71,6 @@ class AudioControls extends PureComponent {
       window.addEventListener('message', processToggleMuteFromOutside);
     }
   }
-
   render() {
     const {
       handleToggleMuteMicrophone,
@@ -125,6 +124,7 @@ class AudioControls extends PureComponent {
 
     return (
       <span className={styles.container}>
+        
         <Button
           className={cx(styles.button, this.state.raised || styles.btn)}
           style={{marginRight :'1.5rem' }}

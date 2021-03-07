@@ -36,6 +36,7 @@ class UserListItem extends PureComponent {
       removeUser,
       setEmojiStatus,
       toggleVoice,
+      toggleMuteAllUsers,
       hasPrivateChatBetweenUsers,
       toggleUserLock,
       requestUserInformation,
@@ -50,6 +51,9 @@ class UserListItem extends PureComponent {
       notify,
       raiseHandAudioAlert,
       raiseHandPushAlert,
+      turnOffUserVideo,
+      turnOnUserVideo,
+      isVideoUser
     } = this.props;
 
     const contents = (
@@ -71,6 +75,7 @@ class UserListItem extends PureComponent {
           removeUser,
           setEmojiStatus,
           toggleVoice,
+          toggleMuteAllUsers,
           user,
           hasPrivateChatBetweenUsers,
           toggleUserLock,
@@ -86,6 +91,10 @@ class UserListItem extends PureComponent {
           notify,
           raiseHandAudioAlert,
           raiseHandPushAlert,
+          turnOffUserVideo,
+          turnOnUserVideo,
+          isVideoUser
+
         }}
       />
     );

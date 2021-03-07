@@ -115,6 +115,7 @@ class MessageList extends Component {
       chatId,
       messages,
     } = this.props;
+
     const {
       scrollPosition: prevScrollPosition,
       messages: prevMessages,

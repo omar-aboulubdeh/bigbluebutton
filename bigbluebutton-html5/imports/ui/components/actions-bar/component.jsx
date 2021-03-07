@@ -10,6 +10,7 @@ import PresentationOptionsContainer from './presentation-options/component';
 import { ACTIONSBAR_HEIGHT } from '/imports/ui/components/layout/layout-manager';
 
 class ActionsBar extends PureComponent {
+ 
   render() {
     const {
       amIPresenter,

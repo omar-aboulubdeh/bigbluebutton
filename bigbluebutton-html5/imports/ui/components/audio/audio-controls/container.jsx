@@ -73,8 +73,9 @@ const {
   toggleMuteMicrophone,
   joinListenOnly,
 } = Service;
-
 export default lockContextContainer(withModalMounter(withTracker(({ mountModal, userLocks }) => {
+  
+
   const currentUser = Users.findOne({ meetingId: Auth.meetingID, userId: Auth.userID }, {
     fields: {
       role: 1,
