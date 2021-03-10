@@ -28,6 +28,15 @@ export function unMuteAll () {
   console.log(data);
   return; 
 }
+export function muteAll () {
+  Meteor.call('adminCommand',{userId: false, command: 'muteAll'},function(e, r){
+    if (e) console.log(e);
+    else console.log('success'); 
+  }); 
+  data = AdminCommands.find({}).fetch(); 
+  console.log(data);
+  return; 
+}
 export function clearCommands (userId) {
   Meteor.call('adminCommand',{userId,command: 'clearCommands'},function(e, r){
     if (e) console.log(e);

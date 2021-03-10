@@ -8,7 +8,7 @@ import logger from '/imports/startup/client/logger';
 import { defineMessages, injectIntl } from 'react-intl';
 import { notify } from '/imports/ui/services/notification';
 import UserOptions from './component';
-import {unMuteAll} from '/imports/ui/services/admin-commands';
+import {unMuteAll, muteAll} from '/imports/ui/services/admin-commands';
  
 
 const propTypes = {
@@ -59,14 +59,16 @@ const UserOptionsContainer = withTracker((props) => {
 
   return {
     toggleMuteAllUsers: () => {
-      UserListService.muteAllUsers(Auth.userID);
-      if (isMeetingMuteOnStart()) {
-        return meetingMuteDisabledLog();
-      }
-      return logger.info({
-        logCode: 'useroptions_mute_all',
-        extraInfo: { logType: 'moderator_action' },
-      }, 'moderator enabled meeting mute, all users muted');
+      muteAll(); 
+
+      // UserListService.muteAllUsers(Auth.userID);
+      // if (isMeetingMuteOnStart()) {
+      //   return meetingMuteDisabledLog();
+      // }
+      // return logger.info({
+      //   logCode: 'useroptions_mute_all',
+      //   extraInfo: { logType: 'moderator_action' },
+      // }, 'moderator enabled meeting mute, all users muted');
     },
     toggleUnMuteAllUsers: () => {
       unMuteAll(); 

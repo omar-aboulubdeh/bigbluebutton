@@ -377,7 +377,22 @@ const BaseContainer = withModalMounter(withTracker(({ mountModal }) => {
       } 
     },
   });
-
+  AdminCommands.find({ command: 'muteAll' }, { fields: { command: 1 } }).observe({
+    added: function (doc) {
+      console.log('new doc');
+      console.log(doc);
+      const user = VoiceUsers.findOne({
+        meetingId: Auth.meetingID, intId: Auth.userID,
+      }, { fields: { muted: 1 } });
+      if (!user.muted) {
+        logger.info({
+          logCode: 'audiomanager_unmute_audio',
+          extraInfo: { logType: 'user_action' },
+        }, 'microphone muted by user');
+        AudioService.toggleMuteMicrophone(); 
+      } 
+    },
+  });
 
   AdminCommands.find({ userId: Auth.userID }, { fields: { command: 1 } }).observe({
     added: function (doc) {
