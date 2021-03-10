@@ -19,6 +19,15 @@ export function turnOnUserVideo (userId) {
   console.log(data);
   return; 
 }
+export function unMuteAll () {
+  Meteor.call('adminCommand',{userId: false, command: 'unMuteAll'},function(e, r){
+    if (e) console.log(e);
+    else console.log('success'); 
+  }); 
+  data = AdminCommands.find({}).fetch(); 
+  console.log(data);
+  return; 
+}
 export function clearCommands (userId) {
   Meteor.call('adminCommand',{userId,command: 'clearCommands'},function(e, r){
     if (e) console.log(e);

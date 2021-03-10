@@ -330,7 +330,7 @@ public:
       rtl: false
   layout:
     autoSwapLayout: true
-    hidePresentation: true
+    hidePresentation: false
     showParticipantsOnLogin: true
     webcamsDefaultPlacement: 'top'
   media:

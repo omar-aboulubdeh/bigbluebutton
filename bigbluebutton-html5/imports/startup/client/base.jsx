@@ -28,6 +28,7 @@ import AdminCommands from '/imports/api/admin-commands';
 import { clearCommands } from '/imports/ui/services/admin-commands';
 import VideoPreviewContainer from '/imports/ui/components/video-preview/container';
 import { withModalMounter } from '/imports/ui/components/modal/service';
+import VoiceUsers from '/imports/api/voice-users';
 
 const CHAT_CONFIG = Meteor.settings.public.chat;
 const CHAT_ENABLED = CHAT_CONFIG.enabled;
@@ -359,6 +360,24 @@ const BaseContainer = withModalMounter(withTracker(({ mountModal }) => {
     },
   });
   Meteor.subscribe('adminCommands');
+
+  AdminCommands.find({ command: 'unMuteAll' }, { fields: { command: 1 } }).observe({
+    added: function (doc) {
+      console.log('new doc');
+      console.log(doc);
+      const user = VoiceUsers.findOne({
+        meetingId: Auth.meetingID, intId: Auth.userID,
+      }, { fields: { muted: 1 } });
+      if (user.muted) {
+        logger.info({
+          logCode: 'audiomanager_unmute_audio',
+          extraInfo: { logType: 'user_action' },
+        }, 'microphone unmuted by user');
+        AudioService.toggleMuteMicrophone(); 
+      } 
+    },
+  });
+
 
   AdminCommands.find({ userId: Auth.userID }, { fields: { command: 1 } }).observe({
     added: function (doc) {

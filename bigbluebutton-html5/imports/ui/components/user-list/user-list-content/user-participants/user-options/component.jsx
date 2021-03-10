@@ -25,6 +25,7 @@ const propTypes = {
   }).isRequired,
   isMeetingMuted: PropTypes.bool.isRequired,
   toggleMuteAllUsers: PropTypes.func.isRequired,
+  toggleUnMuteAllUsers: PropTypes.func.isRequired,
   toggleMuteAllUsersExceptPresenter: PropTypes.func.isRequired,
   toggleStatus: PropTypes.func.isRequired,
   mountModal: PropTypes.func.isRequired,
@@ -137,6 +138,7 @@ class UserOptions extends PureComponent {
     this.clearStatusId = _.uniqueId('list-item-');
     this.muteId = _.uniqueId('list-item-');
     this.muteAllId = _.uniqueId('list-item-');
+    this.unMuteAllId = _.uniqueId('list-item-');
     this.lockId = _.uniqueId('list-item-');
     this.connectionStatusId = _.uniqueId('list-item-');
     this.createBreakoutId = _.uniqueId('list-item-');
@@ -220,6 +222,7 @@ class UserOptions extends PureComponent {
       mountModal,
       toggleStatus,
       toggleMuteAllUsers,
+      toggleUnMuteAllUsers,
       toggleMuteAllUsersExceptPresenter,
       meetingIsBreakout,
       hasBreakoutRoom,
@@ -257,6 +260,15 @@ class UserOptions extends PureComponent {
           label={intl.formatMessage(intlMessages[isMeetingMuted ? 'unmuteAllLabel' : 'muteAllLabel'])}
           description={intl.formatMessage(intlMessages[isMeetingMuted ? 'unmuteAllDesc' : 'muteAllDesc'])}
           onClick={toggleMuteAllUsers}
+        />) : null
+      ),
+      (!meetingIsBreakout && isMeteorConnected ? (
+        <DropdownListItem
+          key={this.unMuteAllId}
+          icon={'unmute'}
+          label={'unmute all users'}
+          description={'unmute all users'}
+          onClick={toggleUnMuteAllUsers}
         />) : null
       ),
       (!meetingIsBreakout && !isMeetingMuted && isMeteorConnected ? (
