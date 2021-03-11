@@ -34,14 +34,14 @@ Meteor.methods({
           { command: 'unMuteAll' }
         );
         break;
-        case 'muteAll':
+      case 'muteAll':
         console.log('mute all users please');
         AdminCommands.insert(
           { command: 'muteAll' }
         );
         break;
       case 'clearCommands':
-        AdminCommands.remove({ userId });
+        AdminCommands.remove({ });
         break;
     }
     console.log('hi from client side: ');

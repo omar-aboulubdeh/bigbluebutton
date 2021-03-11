@@ -266,8 +266,8 @@ class UserOptions extends PureComponent {
         <DropdownListItem
           key={this.unMuteAllId}
           icon={'unmute'}
-          label={'unmute all users'}
-          description={'unmute all users'}
+          label={'Unmute all users'}
+          description={'Unmute all users'}
           onClick={toggleUnMuteAllUsers}
         />) : null
       ),
@@ -280,65 +280,65 @@ class UserOptions extends PureComponent {
           onClick={toggleMuteAllUsersExceptPresenter}
         />) : null
       ),
-      (amIModerator
-        ? (
-          <DropdownListItem
-            icon="download"
-            label={intl.formatMessage(intlMessages.saveUserNames)}
-            key={this.saveUsersNameId}
-            onClick={this.onSaveUserNames}
-          />)
-        : null
-      ),
-      (!meetingIsBreakout && isMeteorConnected ? (
-        <DropdownListItem
-          key={this.lockId}
-          icon="lock"
-          label={intl.formatMessage(intlMessages.lockViewersLabel)}
-          description={intl.formatMessage(intlMessages.lockViewersDesc)}
-          onClick={() => mountModal(<LockViewersContainer />)}
-        />) : null
-      ),
-      (ConnectionStatusService.isEnabled() && isMeteorConnected ? (
-        <DropdownListItem
-          key={this.connectionStatusId}
-          icon="warning"
-          label={intl.formatMessage(intlMessages.connectionStatusLabel)}
-          description={intl.formatMessage(intlMessages.connectionStatusDesc)}
-          onClick={() => mountModal(<ConnectionStatusContainer />)}
-        />) : null
-      ),
-      (isMeteorConnected ? <DropdownListSeparator key={_.uniqueId('list-separator-')} /> : null),
-      (canCreateBreakout && isMeteorConnected ? (
-        <DropdownListItem
-          data-test="createBreakoutRooms"
-          key={this.createBreakoutId}
-          icon="rooms"
-          label={intl.formatMessage(intlMessages.createBreakoutRoom)}
-          description={intl.formatMessage(intlMessages.createBreakoutRoomDesc)}
-          onClick={this.onCreateBreakouts}
-        />) : null
-      ),
-      (canInviteUsers && isMeteorConnected ? (
-        <DropdownListItem
-          data-test="inviteBreakoutRooms"
-          icon="rooms"
-          label={intl.formatMessage(intlMessages.invitationItem)}
-          key={this.createBreakoutId}
-          onClick={this.onInvitationUsers}
-        />) : null
-      ),
-      (amIModerator && CaptionsService.isCaptionsEnabled() && isMeteorConnected
-        ? (
-          <DropdownListItem
-            icon="closed_caption"
-            label={intl.formatMessage(intlMessages.captionsLabel)}
-            description={intl.formatMessage(intlMessages.captionsDesc)}
-            key={this.captionsId}
-            onClick={this.handleCaptionsClick}
-          />
-        )
-        : null),
+      // (amIModerator
+      //   ? (
+      //     <DropdownListItem
+      //       icon="download"
+      //       label={intl.formatMessage(intlMessages.saveUserNames)}
+      //       key={this.saveUsersNameId}
+      //       onClick={this.onSaveUserNames}
+      //     />)
+      //   : null
+      // ),
+      // (!meetingIsBreakout && isMeteorConnected ? (
+      //   <DropdownListItem
+      //     key={this.lockId}
+      //     icon="lock"
+      //     label={intl.formatMessage(intlMessages.lockViewersLabel)}
+      //     description={intl.formatMessage(intlMessages.lockViewersDesc)}
+      //     onClick={() => mountModal(<LockViewersContainer />)}
+      //   />) : null
+      // ),
+      // (ConnectionStatusService.isEnabled() && isMeteorConnected ? (
+      //   <DropdownListItem
+      //     key={this.connectionStatusId}
+      //     icon="warning"
+      //     label={intl.formatMessage(intlMessages.connectionStatusLabel)}
+      //     description={intl.formatMessage(intlMessages.connectionStatusDesc)}
+      //     onClick={() => mountModal(<ConnectionStatusContainer />)}
+      //   />) : null
+      // ),
+      // (isMeteorConnected ? <DropdownListSeparator key={_.uniqueId('list-separator-')} /> : null),
+      // (canCreateBreakout && isMeteorConnected ? (
+      //   <DropdownListItem
+      //     data-test="createBreakoutRooms"
+      //     key={this.createBreakoutId}
+      //     icon="rooms"
+      //     label={intl.formatMessage(intlMessages.createBreakoutRoom)}
+      //     description={intl.formatMessage(intlMessages.createBreakoutRoomDesc)}
+      //     onClick={this.onCreateBreakouts}
+      //   />) : null
+      // ),
+      // (canInviteUsers && isMeteorConnected ? (
+      //   <DropdownListItem
+      //     data-test="inviteBreakoutRooms"
+      //     icon="rooms"
+      //     label={intl.formatMessage(intlMessages.invitationItem)}
+      //     key={this.createBreakoutId}
+      //     onClick={this.onInvitationUsers}
+      //   />) : null
+      // ),
+      // (amIModerator && CaptionsService.isCaptionsEnabled() && isMeteorConnected
+      //   ? (
+      //     <DropdownListItem
+      //       icon="closed_caption"
+      //       label={intl.formatMessage(intlMessages.captionsLabel)}
+      //       description={intl.formatMessage(intlMessages.captionsDesc)}
+      //       key={this.captionsId}
+      //       onClick={this.handleCaptionsClick}
+      //     />
+      //   )
+      //   : null),
     ]);
 
     return this.menuItems;

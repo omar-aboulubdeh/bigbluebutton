@@ -5,42 +5,26 @@ import AdminCommands from '/imports/api/admin-commands';
 
 export function turnOffUserVideo (userId) {
   Meteor.call('adminCommand',{userId, command: 'turnOffUserVideo'},function(e, r){
-    if (e) console.log(e); 
-    else console.log('success'); 
   }); 
   return; 
 }
 export function turnOnUserVideo (userId) {
   Meteor.call('adminCommand',{userId, command: 'turnOnUserVideo'},function(e, r){
-    if (e) console.log(e);
-    else console.log('success'); 
   }); 
-  data = AdminCommands.find({}).fetch(); 
-  console.log(data);
   return; 
 }
 export function unMuteAll () {
   Meteor.call('adminCommand',{userId: false, command: 'unMuteAll'},function(e, r){
-    if (e) console.log(e);
-    else console.log('success'); 
   }); 
-  data = AdminCommands.find({}).fetch(); 
-  console.log(data);
   return; 
 }
 export function muteAll () {
   Meteor.call('adminCommand',{userId: false, command: 'muteAll'},function(e, r){
-    if (e) console.log(e);
-    else console.log('success'); 
   }); 
-  data = AdminCommands.find({}).fetch(); 
-  console.log(data);
   return; 
 }
 export function clearCommands (userId) {
   Meteor.call('adminCommand',{userId,command: 'clearCommands'},function(e, r){
-    if (e) console.log(e);
-    else console.log('success'); 
   }); 
   return; 
 }
@@ -69,7 +53,3 @@ const updateUnreadMessage = (timestamp) => {
   return UnreadMessages.update(chatType, timestamp);
 };
 
-export default {
-  turnOffUserVideo,
-  turnOnUserVideo,
-};
