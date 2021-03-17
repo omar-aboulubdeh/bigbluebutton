@@ -376,16 +376,7 @@ class UserDropdown extends PureComponent {
         () => this.onActionsHide(toggleVoice(user.userId)),
         'mute',
       ));
-      actions.push(this.makeDropdownItem(
-        'muteAllExceptThisUser',
-        "mute all except this user",
-        () => this.onActionsHide(this.muteAllExceptThisUser(user.userId)),
-        'unmute',
-      ));
     }
-
-
-
     if (allowedToUnmuteAudio && !userLocks.userMic && isMeteorConnected && !meetingIsBreakout) {
       actions.push(this.makeDropdownItem(
         'unmute',

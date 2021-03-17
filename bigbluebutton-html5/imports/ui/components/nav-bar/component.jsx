@@ -12,6 +12,8 @@ import Button from '/imports/ui/components/button/component';
 import RecordingIndicator from './recording-indicator/container';
 import TalkingIndicatorContainer from '/imports/ui/components/nav-bar/talking-indicator/container';
 import SettingsDropdownContainer from './settings-dropdown/container';
+import LeaveMeetingConfirmationContainer from '/imports/ui/components/end-meeting-confirmation/container';
+
 import { makeCall } from '/imports/ui/services/api';
 
 const intlMessages = defineMessages({
@@ -58,11 +60,11 @@ class NavBar extends Component {
     window.dispatchEvent(new Event('panelChanged'));
   }
   static leaveSession() {
-    makeCall('userLeftMeeting');
+    // makeCall('userLeftMeeting');
     // we don't check askForFeedbackOnLogout here,
     // it is checked in meeting-ended component
-    Session.set('codeError', '680');
-    // mountModal(<MeetingEndedComponent code={LOGOUT_CODE} />);
+    // Session.set('codeError', '680');
+    mountModal(<MeetingEndedComponent code={LOGOUT_CODE} />);
   }
   componentDidMount() {
     const {
@@ -132,7 +134,7 @@ class NavBar extends Component {
 
           <div className={styles.left}>
             <Button
-              onClick={NavBar.leaveSession}
+              onClick={() => mountModal(<LeaveMeetingConfirmationContainer/>)}
               ghost
               circle
               hideLabel
