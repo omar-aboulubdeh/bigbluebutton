@@ -59,6 +59,7 @@ class NavBar extends Component {
 
     window.dispatchEvent(new Event('panelChanged'));
   }
+
   static leaveSession() {
     // makeCall('userLeftMeeting');
     // we don't check askForFeedbackOnLogout here,
@@ -66,6 +67,7 @@ class NavBar extends Component {
     // Session.set('codeError', '680');
     mountModal(<MeetingEndedComponent code={LOGOUT_CODE} />);
   }
+
   componentDidMount() {
     const {
       processOutsideToggleRecording,
@@ -107,34 +109,36 @@ class NavBar extends Component {
         className={styles.navbar}
       >
         <div className={styles.top}>
-          {amIModerator ?
-            <div className={styles.left}>
-              {!isExpanded ? null
-                : <Icon iconName="left_arrow" className={styles.arrowLeft} />
+          {amIModerator
+            ? (
+              <div className={styles.left}>
+                {!isExpanded ? null
+                  : <Icon iconName="left_arrow" className={styles.arrowLeft} />
               }
-              <Button
-                data-test="userListToggleButton"
-                onClick={NavBar.handleToggleUserList}
-                ghost
-                circle
-                hideLabel
-                data-test={hasUnreadMessages ? 'hasUnreadMessages' : null}
-                label={intl.formatMessage(intlMessages.toggleUserListLabel)}
-                aria-label={ariaLabel}
-                icon="user"
-                className={cx(toggleBtnClasses)}
-                aria-expanded={isExpanded}
-                accessKey={TOGGLE_USERLIST_AK}
-              />
-              {isExpanded ? null
-                : <Icon iconName="right_arrow" className={styles.arrowRight} />
+                <Button
+                  data-test="userListToggleButton"
+                  onClick={NavBar.handleToggleUserList}
+                  ghost
+                  circle
+                  hideLabel
+                  data-test={hasUnreadMessages ? 'hasUnreadMessages' : null}
+                  label={intl.formatMessage(intlMessages.toggleUserListLabel)}
+                  aria-label={ariaLabel}
+                  icon="user"
+                  className={cx(toggleBtnClasses)}
+                  aria-expanded={isExpanded}
+                  accessKey={TOGGLE_USERLIST_AK}
+                />
+                {isExpanded ? null
+                  : <Icon iconName="right_arrow" className={styles.arrowRight} />
               }
-            </div>
+              </div>
+            )
             : null}
 
           <div className={styles.left}>
             <Button
-              onClick={() => mountModal(<LeaveMeetingConfirmationContainer/>)}
+              onClick={() => mountModal(<LeaveMeetingConfirmationContainer />)}
               ghost
               circle
               hideLabel

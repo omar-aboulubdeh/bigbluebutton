@@ -17,23 +17,23 @@ export default withModalMounter(withTracker(({ mountModal }) => ({
   dontDisturb: () => {
     makeCall('userLeftMeeting');
     Auth.logout()
-    .then((logoutURL) => {
-      if (logoutURL) {
-        const protocolPattern = /^((http|https):\/\/)/;
-        window.location.href = protocolPattern.test(logoutURL) ? `${logoutURL}&exit=notdisturb` : `http://${logoutURL}&exit=notdisturb`;
-      }
-    });
+      .then((logoutURL) => {
+        if (logoutURL) {
+          const protocolPattern = /^((http|https):\/\/)/;
+          window.location.href = protocolPattern.test(logoutURL) ? `${logoutURL}?exit=notdisturb` : `http://${logoutURL}?exit=notdisturb`;
+        }
+      });
     Session.set('codeError', this.LOGOUT_CODE);
   },
   okToCall: () => {
     makeCall('userLeftMeeting');
     Auth.logout()
-    .then((logoutURL) => {
-      if (logoutURL) {
-        const protocolPattern = /^((http|https):\/\/)/;
-        window.location.href = protocolPattern.test(logoutURL) ? `${logoutURL}&exit=notdisturb` : `http://${logoutURL}&exit=oktocall`;
-      }
-    });
+      .then((logoutURL) => {
+        if (logoutURL) {
+          const protocolPattern = /^((http|https):\/\/)/;
+          window.location.href = protocolPattern.test(logoutURL) ? `${logoutURL}?exit=oktocall` : `http://${logoutURL}?exit=oktocall`;
+        }
+      });
     Session.set('codeError', this.LOGOUT_CODE);
   },
   endMeeting: () => {

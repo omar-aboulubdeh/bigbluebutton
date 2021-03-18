@@ -47,11 +47,11 @@ class LeaveMeetingComponent extends React.PureComponent {
         className={styles.modal}
         onRequestClose={closeModal}
         hideBorder
-        title={"Leave meeting"}
+        title="Leave meeting"
       >
         <div className={styles.container}>
           <div className={styles.description}>
-            {"Usted quiere no ser molestado por el día de hoy?"}
+            {'Usted quiere no ser molestado por el día de hoy?'}
           </div>
           <div className={styles.footer}>
             <Button
