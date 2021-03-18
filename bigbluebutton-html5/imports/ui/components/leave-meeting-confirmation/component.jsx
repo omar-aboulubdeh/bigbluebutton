@@ -28,8 +28,9 @@ const propTypes = {
   intl: PropTypes.shape({
     formatMessage: PropTypes.func.isRequired,
   }).isRequired,
+  dontDisturb: PropTypes.func.isRequired,
+  okToCall: PropTypes.func.isRequired,
   closeModal: PropTypes.func.isRequired,
-  endMeeting: PropTypes.func.isRequired,
   meetingTitle: PropTypes.string.isRequired,
   users: PropTypes.number.isRequired,
 };
@@ -37,7 +38,7 @@ const propTypes = {
 class LeaveMeetingComponent extends React.PureComponent {
   render() {
     const {
-      users, intl, closeModal, endMeeting, meetingTitle,
+      users, intl, closeModal, dontDisturb, okToCall, meetingTitle,
     } = this.props;
 
     return (
@@ -46,11 +47,11 @@ class LeaveMeetingComponent extends React.PureComponent {
         className={styles.modal}
         onRequestClose={closeModal}
         hideBorder
-        title={intl.formatMessage(intlMessages.endMeetingTitle, { 0: meetingTitle })}
+        title={"Leave meeting"}
       >
         <div className={styles.container}>
           <div className={styles.description}>
-            {intl.formatMessage(intlMessages.endMeetingDescription, { 0: users })}
+            {"Usted quiere no ser molestado por el día de hoy?"}
           </div>
           <div className={styles.footer}>
             <Button
@@ -58,12 +59,12 @@ class LeaveMeetingComponent extends React.PureComponent {
               color="primary"
               className={styles.button}
               label={intl.formatMessage(intlMessages.yesLabel)}
-              onClick={endMeeting}
+              onClick={dontDisturb}
             />
             <Button
               label={intl.formatMessage(intlMessages.noLabel)}
               className={styles.button}
-              onClick={closeModal}
+              onClick={okToCall}
             />
           </div>
         </div>
@@ -72,6 +73,6 @@ class LeaveMeetingComponent extends React.PureComponent {
   }
 }
 
-EndMeetingComponent.propTypes = propTypes;
+LeaveMeetingComponent.propTypes = propTypes;
 
-export default injectIntl(EndMeetingComponent);
+export default injectIntl(LeaveMeetingComponent);

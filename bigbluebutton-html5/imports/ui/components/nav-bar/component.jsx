@@ -12,7 +12,7 @@ import Button from '/imports/ui/components/button/component';
 import RecordingIndicator from './recording-indicator/container';
 import TalkingIndicatorContainer from '/imports/ui/components/nav-bar/talking-indicator/container';
 import SettingsDropdownContainer from './settings-dropdown/container';
-import LeaveMeetingConfirmationContainer from '/imports/ui/components/end-meeting-confirmation/container';
+import LeaveMeetingConfirmationContainer from '/imports/ui/components/leave-meeting-confirmation/container';
 
 import { makeCall } from '/imports/ui/services/api';
 
