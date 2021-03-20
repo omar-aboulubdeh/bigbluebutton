@@ -217,7 +217,7 @@ const isMe = userId => userId === Auth.userID;
 
 const getActiveChats = ({ groupChatsMessages, groupChats, users }) => {
 
-  if (_.isEmpty(groupChats) || _.isEmpty(users)) return [];
+  if (_.isEmpty(groupChats) && _.isEmpty(users)) return [];
   
   const chatIds = Object.keys(groupChats);
   const lastTimeWindows = chatIds.reduce((acc, chatId) => {
@@ -578,6 +578,10 @@ const isUserPresenter = (userId) => {
   return user ? user.presenter : false;
 };
 
+const amIPresenter = () => {
+  return isUserPresenter(Auth.userID);
+};
+
 export const getUserNamesLink = (docTitle, fnSortedLabel, lnSortedLabel) => {
   const mimeType = 'text/plain';
   const userNamesObj = getUsers()
@@ -646,5 +650,6 @@ export default {
   requestUserInformation,
   focusFirstDropDownItem,
   isUserPresenter,
+  amIPresenter,
   getUsersProp,
 };

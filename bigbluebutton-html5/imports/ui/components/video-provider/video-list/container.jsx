@@ -47,15 +47,20 @@ export default withTracker(props => {
       muted,
       callerName,
     };
-  }else{
-    talker = false; 
+  } else {
+    talker = false;
   }
 
 
   return {
-    talker, 
+    talker,
     streams: props.streams,
     onMount: props.onMount,
+    swapLayout: props.swapLayout,
+    numberOfPages: VideoService.getNumberOfPages(),
+    currentVideoPageIndex: props.currentVideoPageIndex,
+    onVideoItemMount: props.onVideoItemMount,
+    onVideoItemUnmount: props.onVideoItemUnmount,
     swapLayout: props.swapLayout,
     numberOfPages: VideoService.getNumberOfPages(),
     currentVideoPageIndex: props.currentVideoPageIndex,

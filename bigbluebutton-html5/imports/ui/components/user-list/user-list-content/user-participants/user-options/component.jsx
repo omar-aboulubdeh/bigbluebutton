@@ -11,6 +11,7 @@ import DropdownList from '/imports/ui/components/dropdown/list/component';
 import DropdownListItem from '/imports/ui/components/dropdown/list/item/component';
 import LockViewersContainer from '/imports/ui/components/lock-viewers/container';
 import ConnectionStatusContainer from '/imports/ui/components/connection-status/modal/container';
+import GuestPolicyContainer from '/imports/ui/components/waiting-users/guest-policy/container';
 import BreakoutRoom from '/imports/ui/components/actions-bar/create-breakout-room/container';
 import CaptionsService from '/imports/ui/components/captions/service';
 import ConnectionStatusService from '/imports/ui/components/connection-status/service';
@@ -30,6 +31,7 @@ const propTypes = {
   toggleStatus: PropTypes.func.isRequired,
   mountModal: PropTypes.func.isRequired,
   users: PropTypes.arrayOf(Object).isRequired,
+  guestPolicy: PropTypes.string.isRequired,
   meetingIsBreakout: PropTypes.bool.isRequired,
   hasBreakoutRoom: PropTypes.bool.isRequired,
   isBreakoutEnabled: PropTypes.bool.isRequired,
@@ -80,6 +82,14 @@ const intlMessages = defineMessages({
   connectionStatusDesc: {
     id: 'app.userList.userOptions.connectionStatusDesc',
     description: 'Connection status description',
+  },
+  guestPolicyLabel: {
+    id: 'app.userList.userOptions.guestPolicyLabel',
+    description: 'Guest policy label',
+  },
+  guestPolicyDesc: {
+    id: 'app.userList.userOptions.guestPolicyDesc',
+    description: 'Guest policy description',
   },
   muteAllExceptPresenterLabel: {
     id: 'app.userList.userOptions.muteAllExceptPresenterLabel',
@@ -141,6 +151,7 @@ class UserOptions extends PureComponent {
     this.unMuteAllId = _.uniqueId('list-item-');
     this.lockId = _.uniqueId('list-item-');
     this.connectionStatusId = _.uniqueId('list-item-');
+    this.guestPolicyId = _.uniqueId('list-item-');
     this.createBreakoutId = _.uniqueId('list-item-');
     this.saveUsersNameId = _.uniqueId('list-item-');
     this.captionsId = _.uniqueId('list-item-');
