@@ -76,7 +76,10 @@ class ScreenshareComponent extends React.Component {
       screenshareHasEnded();
     }
   }
-
+  componentWillMount(){
+    const { toggleSwapLayout } = this.props;
+    toggleSwapLayout(); 
+  }
   componentWillUnmount() {
     const {
       getSwapLayout,
@@ -84,9 +87,9 @@ class ScreenshareComponent extends React.Component {
       toggleSwapLayout,
     } = this.props;
     // const layoutSwapped = getSwapLayout() && shouldEnableSwapLayout();
-    // if (layoutSwapped) toggleSwapLayout();
+    // if (!layoutSwapped) toggleSwapLayout();
     toggleSwapLayout();
-    toggleSwapLayout();
+    // toggleSwapLayout();
     screenshareHasEnded();
     this.screenshareContainer.removeEventListener('fullscreenchange', this.onFullscreenChange);
     window.removeEventListener('screensharePlayFailed', this.handlePlayElementFailed);
@@ -190,9 +193,10 @@ class ScreenshareComponent extends React.Component {
   }
 
   render() {
-    const { loaded, autoplayBlocked, isFullscreen, isStreamHealthy } = this.state;
-    const { intl, isPresenter, isGloballyBroadcasting } = this.props;
 
+    const { loaded, autoplayBlocked, isFullscreen, isStreamHealthy } = this.state;
+    const { intl, isPresenter, isGloballyBroadcasting, toggleSwapLayout } = this.props;
+    // toggleSwapLayout(); 
     // Conditions to render the (re)connecting spinner and the unhealthy stream
     // grayscale:
     // 1 - The local media tag has not received any stream data yet

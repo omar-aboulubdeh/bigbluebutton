@@ -134,7 +134,7 @@ public:
     enableNetworkMonitoring: false
     packetLostThreshold: 10
   kurento:
-    wsUrl: wss://miami.smartvideoexchange.com/bbb-webrtc-sfu
+    wsUrl: wss://miamiprod.smartvideoexchange.com/bbb-webrtc-sfu
     # Valid for video-provider. Time (ms) before its WS connection times out
     # and tries to reconnect.
     wsConnectionTimeout: 4000
@@ -187,7 +187,8 @@ public:
       - id: low-u30
         name: low-u30
         bitrate: 30
-        hidden: true
+      # hidden: true 
+        default: true
         constraints:
           frameRate: 3
       - id: low-u25
@@ -226,7 +227,7 @@ public:
         bitrate: 100
       - id: medium
         name: Medium
-        default: true
+        #default: true
         bitrate: 200
       - id: high
         name: High

@@ -4,6 +4,10 @@ import VideoList from '/imports/ui/components/video-provider/video-list/componen
 import VideoService from '/imports/ui/components/video-provider/service';
 import Auth from '/imports/ui/services/auth';
 import VoiceUsers from '/imports/api/voice-users';
+import {
+  isVideoBroadcasting,
+}
+from '/imports/ui/components/screenshare/service';
 
 const VideoListContainer = ({ children, ...props }) => {
   const { streams } = props;
@@ -54,6 +58,7 @@ export default withTracker(props => {
 
   return {
     talker,
+    isScreenSharing: isVideoBroadcasting,
     streams: props.streams,
     onMount: props.onMount,
     swapLayout: props.swapLayout,

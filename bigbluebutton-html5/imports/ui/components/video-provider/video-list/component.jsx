@@ -219,6 +219,12 @@ class VideoList extends Component {
     window.dispatchEvent(new Event('videoFocusChange'));
   }
 
+  unfocusVideo() {
+    this.setState({
+      focusedId: false,
+    }, this.handleCanvasResize);
+    window.dispatchEvent(new Event('videoFocusChange'));
+  }
   mirrorCamera(cameraId) {
     const { mirroredCameras } = this.state;
     if (this.cameraIsMirrored(cameraId)) {
@@ -358,12 +364,23 @@ class VideoList extends Component {
   componentDidUpdate(prevProps) {
     const {
       streams,
-      talker
+      talker,
+      isScreenSharing
     } = this.props;
     const { focusedId } = this.state;
     const numOfStreams = streams.length;
     const prevTalker = prevProps.talker;
-    if (numOfStreams < 3 || !talker || (prevTalker && talker.intId === prevTalker.intId)) return;
+
+    if (numOfStreams < 3)
+      return;
+
+    const isSharing = isScreenSharing();     
+    if (focusedId && isSharing) {
+        this.unfocusVideo();
+    }
+    if (isSharing) return; 
+    if (!talker || (prevTalker && talker.intId === prevTalker.intId)) return;
+    
     if (talker)
       streams.forEach((stream) => {
         const { cameraId, userId } = stream;
