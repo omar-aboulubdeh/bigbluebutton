@@ -269,7 +269,7 @@ class SettingsDropdown extends PureComponent {
         />
         )
         : null,
-      shouldRenderLogoutOption,
+      // shouldRenderLogoutOption,
     ]);
   }
 
