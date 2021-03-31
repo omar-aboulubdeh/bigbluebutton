@@ -33,6 +33,10 @@ const intlMessages = defineMessages({
     id: 'app.navBar.toggleUserList.newMessages',
     description: 'label for toggleUserList btn when showing red notification',
   },
+  paginationEnabledLabel: {
+    id: 'app.submenu.application.paginationEnabledLabel',
+    description: 'enable/disable video pagination',
+  },
 });
 
 const propTypes = {
@@ -48,6 +52,9 @@ const defaultProps = {
 };
 
 class NavBar extends Component {
+  // constructor(props) {
+    // this.handleUpdateSettings = props.handleUpdateSettings;
+  // }
   static handleToggleUserList() {
     Session.set(
       'openPanel',
@@ -60,6 +67,14 @@ class NavBar extends Component {
     window.dispatchEvent(new Event('panelChanged'));
   }
 
+  // handleToggle(key) {
+    // const obj = this.state;
+    // obj.settings[key] = !this.state.settings[key];
+// 
+    // this.setState(obj, () => {
+      // this.handleUpdateSettings(this.state.settingsName, this.state.settings);
+    // });
+  // }
   static leaveSession() {
     // makeCall('userLeftMeeting');
     // we don't check askForFeedbackOnLogout here,
@@ -93,6 +108,7 @@ class NavBar extends Component {
       shortcuts: TOGGLE_USERLIST_AK,
       mountModal,
       presentationTitle,
+      togglePagination,
       amIModerator,
     } = this.props;
 
@@ -157,6 +173,16 @@ class NavBar extends Component {
             />
           </div>
           <div className={styles.right}>
+          <Button
+              onClick={togglePagination}
+              ghost
+              circle
+              hideLabel
+              label={intl.formatMessage(intlMessages.paginationEnabledLabel)}
+              aria-label={intl.formatMessage(intlMessages.paginationEnabledLabel)}
+              icon="presentation"
+              className={cx(toggleBtnClasses)}
+            />
             <SettingsDropdownContainer amIModerator={amIModerator} />
           </div>
         </div>
