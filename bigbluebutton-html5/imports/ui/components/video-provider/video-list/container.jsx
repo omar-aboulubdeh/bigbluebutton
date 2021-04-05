@@ -4,6 +4,8 @@ import VideoList from '/imports/ui/components/video-provider/video-list/componen
 import VideoService from '/imports/ui/components/video-provider/service';
 import Auth from '/imports/ui/services/auth';
 import VoiceUsers from '/imports/api/voice-users';
+import SettingsService from '/imports/ui/services/settings';
+
 import {
   isVideoBroadcasting,
 }
@@ -14,16 +16,6 @@ const VideoListContainer = ({ children, ...props }) => {
   return (!streams.length ? null : <VideoList{...props}>{children}</VideoList>);
 };
 
-const sortByStartTime = (a, b) => {
-  if (a.startTime < b.startTime) return -1;
-  if (a.startTime > b.startTime) return 1;
-  return 0;
-};
-
-const sortVoiceUsers = (a, b) => {
-  const sort = sortByStartTime(a, b);
-  return sort;
-};
 
 export default withTracker(props => {
   const meetingId = Auth.meetingID;
@@ -57,7 +49,8 @@ export default withTracker(props => {
 
 
   return {
-    talker,
+    talker: props.talker,
+    paginationEnabled: SettingsService.application.paginationEnabled,
     isScreenSharing: isVideoBroadcasting,
     streams: props.streams,
     onMount: props.onMount,

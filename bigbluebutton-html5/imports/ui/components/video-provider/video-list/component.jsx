@@ -365,26 +365,33 @@ class VideoList extends Component {
     const {
       streams,
       talker,
-      isScreenSharing
+      isScreenSharing,
+      paginationEnabled
     } = this.props;
     const { focusedId } = this.state;
     const numOfStreams = streams.length;
     const prevTalker = prevProps.talker;
+    const wasPaginationEnabled = prevProps.paginationEnabled; 
+    if (wasPaginationEnabled && !paginationEnabled ){
+      this.unfocusVideo();
+    }
+    if (!paginationEnabled)
+      return 
 
     if (numOfStreams < 3)
       return;
-
-    const isSharing = isScreenSharing();     
+      
+    const isSharing = isScreenSharing();
     if (focusedId && isSharing) {
         this.unfocusVideo();
     }
-    if (isSharing) return; 
-    if (!talker || (prevTalker && talker.intId === prevTalker.intId)) return;
+    if (isSharing) return;
+    if (!talker || (prevTalker && talker === prevTalker)) return;
     
     if (talker)
       streams.forEach((stream) => {
         const { cameraId, userId } = stream;
-        if (userId === talker.intId) {
+        if (userId === talker) {
           // here is my magic :D
           if (focusedId != cameraId)
             this.handleVideoFocus(cameraId);

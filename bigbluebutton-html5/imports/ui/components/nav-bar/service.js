@@ -29,7 +29,9 @@ const connectRecordingObserver = () => {
 };
 
 const togglePagination = () =>{
-  SettingsService.application.paginationEnabled = !SettingsService.application.paginationEnabled ; 
+  const appSettings = _.clone(SettingsService.application); 
+  appSettings.paginationEnabled = !appSettings.paginationEnabled ; 
+  SettingsService.application = appSettings ; 
   SettingsService.save(); 
   setTimeout(() => {
     notify(
