@@ -11,6 +11,7 @@ import { GroupChatContext } from '/imports/ui/components/components-data/group-c
 import { UsersContext } from '/imports/ui/components/components-data/users-context/context';
 import userListService from '../user-list/service';
 import NoteService from '/imports/ui/components/note/service';
+
 import Service from './service';
 import NavBar from './component';
 
@@ -65,7 +66,7 @@ export default withTracker(() => {
     document.title = titleString;
   }
 
-  const { connectRecordingObserver, processOutsideToggleRecording } = Service;
+  const { connectRecordingObserver, processOutsideToggleRecording, togglePagination } = Service;
   const currentUser = Users.findOne({ userId: Auth.userID }, { fields: { role: 1 } });
   const openPanel = Session.get('openPanel');
   const isExpanded = openPanel !== '';
@@ -79,6 +80,7 @@ export default withTracker(() => {
     currentUserId: Auth.userID,
     processOutsideToggleRecording,
     connectRecordingObserver,
+    togglePagination,
     meetingId,
     hasUnreadNotes,
     presentationTitle: meetingTitle,

@@ -15,6 +15,7 @@ import getFromUserSettings from '/imports/ui/services/users-settings';
 import VideoPreviewService from '../video-preview/service';
 import Storage from '/imports/ui/services/storage/session';
 import logger from '/imports/startup/client/logger';
+
 import _ from 'lodash';
 
 const CAMERA_PROFILES = Meteor.settings.public.kurento.cameraProfiles;
@@ -465,7 +466,6 @@ class VideoService {
       { fields: {} });
     return !!videoStreams;
   }
-
   hasStream(streams, stream) {
     return streams.find(s => s.stream === stream);
   }

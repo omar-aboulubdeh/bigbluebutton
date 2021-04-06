@@ -5,6 +5,8 @@ import Meetings from '/imports/api/meetings';
 import Auth from '/imports/ui/services/auth';
 import UserListItem from './component';
 import UserListService from '/imports/ui/components/user-list/service';
+import AdminCommands from '/imports/ui/services/admin-commands';
+import VideoStreams from '/imports/api/video-streams';
 
 const UserListItemContainer = props => <UserListItem {...props} />;
 const isMe = intId => intId === Auth.userID;
@@ -14,7 +16,6 @@ export default withTracker(({ user }) => {
   const breakoutSequence = (findUserInBreakout || {}).sequence;
   const Meeting = Meetings.findOne({ meetingId: Auth.meetingID },
     { fields: { lockSettingsProps: 1 } });
-
   return {
     user,
     isMe,
@@ -25,6 +26,16 @@ export default withTracker(({ user }) => {
     isThisMeetingLocked: UserListService.isMeetingLocked(Auth.meetingID),
     voiceUser: UserListService.curatedVoiceUser(user.userId),
     toggleVoice: UserListService.toggleVoice,
+    toggleMuteAllUsersExceptPresenter: () => {
+      UserListService.muteAllExceptPresenter(Auth.userID);
+      if (isMeetingMuteOnStart()) {
+        return meetingMuteDisabledLog();
+      }
+      return logger.info({
+        logCode: 'useroptions_mute_all_except_presenter',
+        extraInfo: { logType: 'moderator_action' },
+      }, 'moderator enabled meeting mute, all users muted except presenter');
+    },
     removeUser: UserListService.removeUser,
     toggleUserLock: UserListService.toggleUserLock,
     changeRole: UserListService.changeRole,
@@ -36,5 +47,13 @@ export default withTracker(({ user }) => {
     getEmoji: UserListService.getEmoji(),
     usersProp: UserListService.getUsersProp(),
     hasPrivateChatBetweenUsers: UserListService.hasPrivateChatBetweenUsers,
+    turnOffUserVideo: AdminCommands.turnOffUserVideo,
+    turnOnUserVideo: AdminCommands.turnOnUserVideo,
+    isVideoUser: VideoStreams.find(
+      {
+        meetingId: Auth.meetingID,
+        userId: user.userId,
+      }, { fields: { stream: 1 } },
+    ).count() !== 0
   };
 })(UserListItemContainer);

@@ -14,8 +14,15 @@ import TalkingIndicatorContainer from '/imports/ui/components/nav-bar/talking-in
 import ConnectionStatusButton from '/imports/ui/components/connection-status/button/container';
 import ConnectionStatusService from '/imports/ui/components/connection-status/service';
 import SettingsDropdownContainer from './settings-dropdown/container';
+import LeaveMeetingConfirmationContainer from '/imports/ui/components/leave-meeting-confirmation/container';
+
+import { makeCall } from '/imports/ui/services/api';
 
 const intlMessages = defineMessages({
+  leaveSessionLabel: {
+    id: 'app.navBar.settingsDropdown.leaveSessionLabel',
+    description: 'Leave session button label',
+  },
   toggleUserListLabel: {
     id: 'app.navBar.userListToggleBtnLabel',
     description: 'Toggle button label',
@@ -27,6 +34,10 @@ const intlMessages = defineMessages({
   newMessages: {
     id: 'app.navBar.toggleUserList.newMessages',
     description: 'label for toggleUserList btn when showing red notification',
+  },
+  paginationEnabledLabel: {
+    id: 'app.submenu.application.paginationEnabledLabel',
+    description: 'enable/disable video pagination',
   },
 });
 
@@ -43,6 +54,9 @@ const defaultProps = {
 };
 
 class NavBar extends Component {
+  // constructor(props) {
+  // this.handleUpdateSettings = props.handleUpdateSettings;
+  // }
   static handleToggleUserList() {
     Session.set(
       'openPanel',
@@ -53,6 +67,22 @@ class NavBar extends Component {
     Session.set('idChatOpen', '');
 
     window.dispatchEvent(new Event('panelChanged'));
+  }
+
+  // handleToggle(key) {
+  // const obj = this.state;
+  // obj.settings[key] = !this.state.settings[key];
+  // 
+  // this.setState(obj, () => {
+  // this.handleUpdateSettings(this.state.settingsName, this.state.settings);
+  // });
+  // }
+  static leaveSession() {
+    // makeCall('userLeftMeeting');
+    // we don't check askForFeedbackOnLogout here,
+    // it is checked in meeting-ended component
+    // Session.set('codeError', '680');
+    mountModal(<MeetingEndedComponent code={LOGOUT_CODE} />);
   }
 
   componentDidMount() {
@@ -80,6 +110,7 @@ class NavBar extends Component {
       shortcuts: TOGGLE_USERLIST_AK,
       mountModal,
       presentationTitle,
+      togglePagination,
       amIModerator,
     } = this.props;
 
@@ -96,27 +127,44 @@ class NavBar extends Component {
         className={styles.navbar}
       >
         <div className={styles.top}>
+          {amIModerator
+            ? (
+              <div className={styles.left}>
+                {!isExpanded ? null
+                  : <Icon iconName="left_arrow" className={styles.arrowLeft} />
+                }
+                <Button
+                  data-test="userListToggleButton"
+                  onClick={NavBar.handleToggleUserList}
+                  ghost
+                  circle
+                  hideLabel
+                  data-test={hasUnreadMessages ? 'hasUnreadMessages' : null}
+                  label={intl.formatMessage(intlMessages.toggleUserListLabel)}
+                  aria-label={ariaLabel}
+                  icon="user"
+                  className={cx(toggleBtnClasses)}
+                  aria-expanded={isExpanded}
+                  accessKey={TOGGLE_USERLIST_AK}
+                />
+                {isExpanded ? null
+                  : <Icon iconName="right_arrow" className={styles.arrowRight} />
+                }
+              </div>
+            )
+            : null}
+
           <div className={styles.left}>
-            {!isExpanded ? null
-              : <Icon iconName="left_arrow" className={styles.arrowLeft} />
-            }
             <Button
-              data-test="userListToggleButton"
-              onClick={NavBar.handleToggleUserList}
+              onClick={() => mountModal(<LeaveMeetingConfirmationContainer />)}
               ghost
               circle
               hideLabel
-              data-test={hasUnreadMessages ? 'hasUnreadMessages' : null}
-              label={intl.formatMessage(intlMessages.toggleUserListLabel)}
-              aria-label={ariaLabel}
-              icon="user"
+              label={intl.formatMessage(intlMessages.leaveSessionLabel)}
+              aria-label={intl.formatMessage(intlMessages.leaveSessionLabel)}
+              icon="logout"
               className={cx(toggleBtnClasses)}
-              aria-expanded={isExpanded}
-              accessKey={TOGGLE_USERLIST_AK}
             />
-            {isExpanded ? null
-              : <Icon iconName="right_arrow" className={styles.arrowRight} />
-            }
           </div>
           <div className={styles.center}>
             <h1 className={styles.presentationTitle}>{presentationTitle}</h1>
@@ -127,6 +175,16 @@ class NavBar extends Component {
             />
           </div>
           <div className={styles.right}>
+            <Button
+              onClick={togglePagination}
+              ghost
+              circle
+              hideLabel
+              label={intl.formatMessage(intlMessages.paginationEnabledLabel)}
+              aria-label={intl.formatMessage(intlMessages.paginationEnabledLabel)}
+              icon="presentation"
+              className={cx(toggleBtnClasses)}
+            />
             {ConnectionStatusService.isEnabled() ? <ConnectionStatusButton /> : null}
             <SettingsDropdownContainer amIModerator={amIModerator} />
           </div>

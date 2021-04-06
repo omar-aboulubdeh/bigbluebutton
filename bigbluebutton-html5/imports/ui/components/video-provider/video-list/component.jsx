@@ -219,6 +219,12 @@ class VideoList extends Component {
     window.dispatchEvent(new Event('videoFocusChange'));
   }
 
+  unfocusVideo() {
+    this.setState({
+      focusedId: false,
+    }, this.handleCanvasResize);
+    window.dispatchEvent(new Event('videoFocusChange'));
+  }
   mirrorCamera(cameraId) {
     const { mirroredCameras } = this.state;
     if (this.cameraIsMirrored(cameraId)) {
@@ -311,6 +317,7 @@ class VideoList extends Component {
       const isFocused = focusedId === cameraId;
       const isFocusedIntlKey = !isFocused ? 'focus' : 'unfocus';
       const isMirrored = this.cameraIsMirrored(cameraId);
+
       let actions = [{
         actionName: ACTION_NAME_MIRROR,
         label: intl.formatMessage(intlMessages['mirrorLabel']),
@@ -354,6 +361,43 @@ class VideoList extends Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    const {
+      streams,
+      talker,
+      isScreenSharing,
+      paginationEnabled
+    } = this.props;
+    const { focusedId } = this.state;
+    const numOfStreams = streams.length;
+    const prevTalker = prevProps.talker;
+    const wasPaginationEnabled = prevProps.paginationEnabled; 
+    if (wasPaginationEnabled && !paginationEnabled ){
+      this.unfocusVideo();
+    }
+    if (!paginationEnabled)
+      return 
+
+    if (numOfStreams < 3)
+      return;
+      
+    const isSharing = isScreenSharing();
+    if (focusedId && isSharing) {
+        this.unfocusVideo();
+    }
+    if (isSharing) return;
+    if (!talker || (prevTalker && talker === prevTalker)) return;
+    
+    if (talker)
+      streams.forEach((stream) => {
+        const { cameraId, userId } = stream;
+        if (userId === talker) {
+          // here is my magic :D
+          if (focusedId != cameraId)
+            this.handleVideoFocus(cameraId);
+        }
+      });
+  }
   render() {
     const { streams, intl } = this.props;
     const { optimalGrid, autoplayBlocked } = this.state;

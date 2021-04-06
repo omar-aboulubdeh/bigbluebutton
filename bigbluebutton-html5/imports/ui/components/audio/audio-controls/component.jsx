@@ -9,11 +9,18 @@ import withShortcutHelper from '/imports/ui/components/shortcut-help/service';
 import InputStreamLiveSelectorContainer from './input-stream-live-selector/container';
 import MutedAlert from '/imports/ui/components/muted-alert/component';
 import { styles } from './styles';
+import Auth from '/imports/ui/services/auth';
+import Users from '/imports/api/users';
+import { makeCall } from '/imports/ui/services/api';
 
 const intlMessages = defineMessages({
   joinAudio: {
     id: 'app.audio.joinAudio',
     description: 'Join audio button label',
+  },
+  raiseHand: {
+    id: 'app.actionsBar.emojiMenu.raiseHandDesc',
+    description: 'Raise Hand button label',
   },
   leaveAudio: {
     id: 'app.audio.leaveAudio',
@@ -28,7 +35,7 @@ const intlMessages = defineMessages({
     description: 'Unmute audio button label',
   },
 });
-
+const getEmoji = () => Users.findOne({ userId: Auth.userID }, { fields: { emoji: 1 } }).emoji;
 const propTypes = {
   processToggleMuteFromOutside: PropTypes.func.isRequired,
   handleToggleMuteMicrophone: PropTypes.func.isRequired,
@@ -53,8 +60,8 @@ class AudioControls extends PureComponent {
 
     this.renderJoinLeaveButton = this.renderJoinLeaveButton.bind(this);
   }
-
   componentDidMount() {
+    // this.state.raised = getEmoji() === 'raiseHand';
     const { processToggleMuteFromOutside } = this.props;
     if (Meteor.settings.public.allowOutsideCommands.toggleSelfVoice
       || getFromUserSettings('bbb_outside_toggle_self_voice', false)) {
@@ -209,7 +216,7 @@ class AudioControls extends PureComponent {
         ) : null}
         {showMute && isVoiceUser ? toggleMuteBtn : null}
         {
-          this.renderJoinLeaveButton()
+          // this.renderJoinLeaveButton()
         }
       </span>
     );

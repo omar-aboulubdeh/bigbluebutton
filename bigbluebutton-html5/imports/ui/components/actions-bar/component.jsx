@@ -12,6 +12,7 @@ import JoinVideoOptionsContainer from '../video-provider/video-button/container'
 import PresentationOptionsContainer from './presentation-options/component';
 
 class ActionsBar extends PureComponent {
+ 
   render() {
     const {
       amIPresenter,

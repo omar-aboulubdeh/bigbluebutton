@@ -9,6 +9,10 @@ import logger from '/imports/startup/client/logger';
 import { defineMessages, injectIntl } from 'react-intl';
 import { notify } from '/imports/ui/services/notification';
 import UserOptions from './component';
+import { unMuteAll, muteAll } from '/imports/ui/services/admin-commands';
+import VoiceUsers from '/imports/api/voice-users';
+import Service from '../../../service';
+
 
 const propTypes = {
   users: PropTypes.arrayOf(Object).isRequired,
@@ -58,14 +62,29 @@ const UserOptionsContainer = withTracker((props) => {
 
   return {
     toggleMuteAllUsers: () => {
-      UserListService.muteAllUsers(Auth.userID);
-      if (isMeetingMuteOnStart()) {
-        return meetingMuteDisabledLog();
-      }
-      return logger.info({
-        logCode: 'useroptions_mute_all',
-        extraInfo: { logType: 'moderator_action' },
-      }, 'moderator enabled meeting mute, all users muted');
+      // muteAll(); 
+      VoiceUsers.find({}).forEach(usr => {
+        console.log('hi')
+        if (!usr.muted) {
+          Service.toggleVoice(usr.intId);
+        }
+      });
+      // UserListService.muteAllUsers(Auth.userID);
+      // if (isMeetingMuteOnStart()) {
+      //   return meetingMuteDisabledLog();
+      // }
+      // return logger.info({
+      //   logCode: 'useroptions_mute_all',
+      //   extraInfo: { logType: 'moderator_action' },
+      // }, 'moderator enabled meeting mute, all users muted');
+    },
+    toggleUnMuteAllUsers: () => {
+      VoiceUsers.find({}).forEach(usr => {
+        console.log('hi')
+        if (usr.muted) {
+          Service.toggleVoice(usr.intId);
+        }
+      });
     },
     toggleMuteAllUsersExceptPresenter: () => {
       UserListService.muteAllExceptPresenter(Auth.userID);

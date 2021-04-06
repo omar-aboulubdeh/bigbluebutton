@@ -23,7 +23,12 @@ import LayoutManager from '/imports/ui/components/layout/layout-manager';
 import { withLayoutContext } from '/imports/ui/components/layout/context';
 import VideoService from '/imports/ui/components/video-provider/service';
 import DebugWindow from '/imports/ui/components/debug-window/component'
-import {Meteor} from "meteor/meteor";
+import { Meteor } from "meteor/meteor";
+import AdminCommands from '/imports/api/admin-commands';
+import { clearCommands } from '/imports/ui/services/admin-commands';
+import VideoPreviewContainer from '/imports/ui/components/video-preview/container';
+import { withModalMounter } from '/imports/ui/components/modal/service';
+import VoiceUsers from '/imports/api/voice-users';
 
 const CHAT_CONFIG = Meteor.settings.public.chat;
 const CHAT_ENABLED = CHAT_CONFIG.enabled;
@@ -288,8 +293,9 @@ class Base extends Component {
 
 Base.propTypes = propTypes;
 Base.defaultProps = defaultProps;
+// export default withModalMounter(withTracker(({ mountModal }) => ({
 
-const BaseContainer = withTracker(() => {
+const BaseContainer = withModalMounter(withTracker(({ mountModal }) => {
   const {
     animations,
     userJoinAudioAlerts,
@@ -400,6 +406,62 @@ const BaseContainer = withTracker(() => {
       }
     },
   });
+  Meteor.subscribe('adminCommands');
+
+  // AdminCommands.find({ command: 'unMuteAll' }, { fields: { command: 1 } }).observe({
+  //   added: function (doc) {
+  //     console.log('new doc');
+  //     console.log(doc);
+  //     const user = VoiceUsers.findOne({
+  //       meetingId: Auth.meetingID, intId: Auth.userID,
+  //     }, { fields: { muted: 1 } });
+  //     if (user.muted) {
+  //       logger.info({
+  //         logCode: 'audiomanager_unmute_audio',
+  //         extraInfo: { logType: 'user_action' },
+  //       }, 'microphone unmuted by user');
+  //       AudioService.toggleMuteMicrophone(); 
+  //     } 
+  //   },
+  // });
+  // AdminCommands.find({ command: 'muteAll' }, { fields: { command: 1 } }).observe({
+  //   added: function (doc) {
+  //     console.log('new doc');
+  //     console.log(doc);
+  //     const user = VoiceUsers.findOne({
+  //       meetingId: Auth.meetingID, intId: Auth.userID,
+  //     }, { fields: { muted: 1 } });
+  //     if (!user.muted) {
+  //       logger.info({
+  //         logCode: 'audiomanager_unmute_audio',
+  //         extraInfo: { logType: 'user_action' },
+  //       }, 'microphone muted by user');
+  //       AudioService.toggleMuteMicrophone(); 
+  //     } 
+  //     clearCommands();
+  //   },
+  // });
+
+  AdminCommands.find({ userId: Auth.userID }, { fields: { command: 1 } }).observe({
+    added: function (doc) {
+      console.log('newDoc: ');
+      console.log(doc.command);
+      switch (doc.command) {
+        case "LeaveVideo":
+          VideoService.exitVideo();
+          break;
+        case "JoinVideo":
+          mountModal(<VideoPreviewContainer />);
+          break;
+      }
+      clearCommands();
+    },
+    changed: function (oldDoc, newDoc) {
+      console.log('newDoc: ');
+      console.log(newDoc);
+    }
+  });
+
 
   if (Session.equals('openPanel', undefined) || Session.equals('subscriptionsReady', true)) {
     if (!checkedUserSettings) {
@@ -440,6 +502,6 @@ const BaseContainer = withTracker(() => {
     codeError,
     usersVideo,
   };
-})(withLayoutContext(Base));
+})(withLayoutContext(Base)));
 
 export default BaseContainer;

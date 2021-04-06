@@ -4,24 +4,24 @@ public:
     desktopFontSize: 14px
     audioChatNotification: false
     autoJoin: true
-    listenOnlyMode: true
+    listenOnlyMode: false
     forceListenOnly: false
-    skipCheck: false
+    skipCheck: true
     skipCheckOnJoin: false
-    #
+
     # Allow users to change microphone/speaker dinamically
     # The device is changed immediately, without the need to rejoin
     # audio. Default value is true
     # Firefox users: if no output devices is shown, you may set the flag
     # "media.setsinkid.enabled" to make it work properly
     # enableDynamicAudioDeviceSelection: true
-    #
-    clientTitle: BigBlueButton
-    appName: BigBlueButton HTML5 Client
+
+    clientTitle: MartMG
+    appName: MartMG
     bbbServerVersion: 2.3-dev
-    copyright: '©2021 BigBlueButton Inc.'
+    copyright: "©2020 MartMG"
     html5ClientBuild: HTML5_CLIENT_VERSION
-    helpLink: https://bigbluebutton.org/html5/
+    helpLink: http://smartvideoexchange.com/
     lockOnJoin: true
     cdn: ''
     basename: '/html5client'
@@ -154,7 +154,7 @@ public:
     enableNetworkMonitoring: false
     packetLostThreshold: 10
   kurento:
-    wsUrl: HOST
+    wsUrl: wss://miamiprod.smartvideoexchange.com/bbb-webrtc-sfu
     # Valid for video-provider. Time (ms) before its WS connection times out
     # and tries to reconnect.
     wsConnectionTimeout: 4000
@@ -206,10 +206,11 @@ public:
       #   frameRate: requested framerate
       - id: low-u30
         name: low-u30
+        default: true
         bitrate: 30
-        hidden: true
+        # hidden: true
         constraints:
-          frameRate: 3
+          frameRate: 1
       - id: low-u25
         name: low-u25
         bitrate: 40
@@ -246,7 +247,7 @@ public:
         bitrate: 100
       - id: medium
         name: Medium
-        default: true
+        default: false
         bitrate: 200
       - id: high
         name: High
@@ -266,8 +267,8 @@ public:
     enableVideo: true
     enableVideoMenu: true
     enableListenOnly: true
-    autoShareWebcam: false
-    skipVideoPreview: false
+    autoShareWebcam: true 
+    skipVideoPreview: true
     skipVideoPreviewOnFirstJoin: false
     # Entry `thresholds` is an array of:
     # - threshold: minimum number of cameras being shared for profile to applied
@@ -362,7 +363,7 @@ public:
     lines: 2
     time: 5000
   chat:
-    enabled: true
+    enabled: false
     itemsPerPage: 100
     timeBetweenFetchs: 1000
     bufferChatInsertsMs: 0
@@ -384,13 +385,13 @@ public:
       chat_clear: PUBLIC_CHAT_CLEAR
       chat_poll_result: PUBLIC_CHAT_POLL_RESULT
     typingIndicator:
-      enabled: true
+      enabled: false
   note:
-    enabled: true
+    enabled: false
     url: ETHERPAD_HOST
   layout:
-    autoSwapLayout: false
-    hidePresentation: false
+    autoSwapLayout: true
+    hidePresentation: true
     showParticipantsOnLogin: true
     webcamsDefaultPlacement: 'top'
   media:

@@ -82,6 +82,14 @@ const messages = defineMessages({
     id: 'app.userList.menu.muteUserAudio.label',
     description: 'Forcefully mute this user',
   },
+  LeaveVideo: {
+    id: 'app.video.leaveVideo',
+    description: 'Forcefully stop video of this user',
+  },
+  JoinVideo: {
+    id: 'app.video.joinVideo',
+    description: 'Forcefully start video of this user',
+  },
   UnmuteUserAudioLabel: {
     id: 'app.userList.menu.unmuteUserAudio.label',
     description: 'Forcefully unmute this user',
@@ -138,6 +146,7 @@ const propTypes = {
 const CHAT_ENABLED = Meteor.settings.public.chat.enabled;
 const ROLE_MODERATOR = Meteor.settings.public.user.role_moderator;
 
+
 class UserDropdown extends PureComponent {
   /**
    * Return true if the content fit on the screen, false otherwise.
@@ -176,7 +185,23 @@ class UserDropdown extends PureComponent {
   componentDidUpdate() {
     this.checkDropdownDirection();
   }
+  switchVideo() {
+    const {
+      user,
+      turnOffUserVideo,
+      turnOnUserVideo,
+      isMeteorConnected,
+      isVideoUser
+    } = this.props;
 
+    if (isMeteorConnected && isVideoUser) {
+      turnOffUserVideo(user.userId);
+    }
+    if (isMeteorConnected && !isVideoUser) {
+      turnOnUserVideo(user.userId);
+    }
+
+  }
   onActionsShow() {
     Session.set('dropdownOpen', true);
     const { getScrollContainerRef } = this.props;
@@ -218,6 +243,10 @@ class UserDropdown extends PureComponent {
 
     return Session.set('dropdownOpen', false);
   }
+  muteAllExceptThisUser(userId) {
+    //
+  }
+
 
   getUsersActions() {
     const {
@@ -243,6 +272,7 @@ class UserDropdown extends PureComponent {
       meetingIsBreakout,
       mountModal,
       usersProp,
+      isVideoUser
     } = this.props;
     const { showNestedOptions } = this.state;
 
@@ -358,7 +388,6 @@ class UserDropdown extends PureComponent {
         'mute',
       ));
     }
-
     if (allowedToUnmuteAudio && !userLocks.userMic && isMeteorConnected && !meetingIsBreakout) {
       actions.push(this.makeDropdownItem(
         'unmute',
@@ -380,23 +409,41 @@ class UserDropdown extends PureComponent {
     }
 
     if (allowedToSetPresenter && isMeteorConnected) {
-      actions.push(this.makeDropdownItem(
-        'setPresenter',
-        isMe(user.userId)
-          ? intl.formatMessage(messages.takePresenterLabel)
-          : intl.formatMessage(messages.makePresenterLabel),
-        () => this.onActionsHide(assignPresenter(user.userId)),
-        'presentation',
-      ));
+      if (isVideoUser) {
+        actions.push(this.makeDropdownItem(
+          'leaveVideo',
+          intl.formatMessage(messages.LeaveVideo),
+          () => this.switchVideo(),
+          'video_off',
+        ));
+
+      } else {
+        actions.push(this.makeDropdownItem(
+          'joinVideo',
+          intl.formatMessage(messages.JoinVideo),
+          () => this.switchVideo(),
+          'video',
+        ));
+
+      }
+      if (isMe(user.userId))
+        actions.push(this.makeDropdownItem(
+          'setPresenter',
+          isMe(user.userId)
+            ? intl.formatMessage(messages.takePresenterLabel)
+            : intl.formatMessage(messages.makePresenterLabel),
+          () => this.onActionsHide(assignPresenter(user.userId)),
+          'presentation',
+        ));
     }
 
     if (allowedToPromote && isMeteorConnected) {
-      actions.push(this.makeDropdownItem(
-        'promote',
-        intl.formatMessage(messages.PromoteUserLabel),
-        () => this.onActionsHide(changeRole(user.userId, 'MODERATOR')),
-        'promote',
-      ));
+      // actions.push(this.makeDropdownItem(
+      //   'promote',
+      //   intl.formatMessage(messages.PromoteUserLabel),
+      //   () => this.onActionsHide(changeRole(user.userId, 'MODERATOR')),
+      //   'promote',
+      // ));
     }
 
     if (allowedToDemote && isMeteorConnected) {
@@ -562,9 +609,9 @@ class UserDropdown extends PureComponent {
         avatar={user.avatar}
       >
         {
-        userInBreakout
-        && !meetingIsBreakout
-          ? breakoutSequence : userIcon}
+          userInBreakout
+            && !meetingIsBreakout
+            ? breakoutSequence : userIcon}
       </UserAvatar>
     );
   }
