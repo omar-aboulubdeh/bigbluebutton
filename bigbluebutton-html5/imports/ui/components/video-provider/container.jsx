@@ -15,6 +15,7 @@ export default withTracker(props => {
   //  streams: array of mapped streams
   //  totalNumberOfStreams: total number of shared streams in the server
   // }
+  
   const {
     streams,
     totalNumberOfStreams

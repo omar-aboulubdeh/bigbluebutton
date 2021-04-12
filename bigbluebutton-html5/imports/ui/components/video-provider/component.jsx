@@ -386,7 +386,7 @@ class VideoProvider extends Component {
     }
   }
 
-  clearRestartTimers (cameraId) {
+  clearRestartTimers(cameraId) {
     if (this.restartTimeout[cameraId]) {
       clearTimeout(this.restartTimeout[cameraId]);
       delete this.restartTimeout[cameraId];
@@ -703,7 +703,7 @@ class VideoProvider extends Component {
     this.sendMessage(message);
   }
 
-  _handleIceConnectionStateChange (cameraId, isLocal) {
+  _handleIceConnectionStateChange(cameraId, isLocal) {
     const { intl } = this.props;
     const peer = this.webRtcPeers[cameraId];
     const role = VideoService.getRole(isLocal);
@@ -865,10 +865,11 @@ class VideoProvider extends Component {
   }
 
   render() {
-    const { swapLayout, currentVideoPageIndex, streams } = this.props;
+    const { swapLayout, currentVideoPageIndex, streams, talker } = this.props;
 
     return (
       <VideoListContainer
+        talker={talker}
         streams={streams}
         onVideoItemMount={this.createVideoTag}
         onVideoItemUnmount={this.destroyVideoTag}

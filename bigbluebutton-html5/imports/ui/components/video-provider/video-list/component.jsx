@@ -133,8 +133,8 @@ class VideoList extends Component {
   }
 
   setOptimalGrid() {
-    const { streams, webcamDraggableDispatch } = this.props;
-    let numItems = streams.length;
+    const { streams, webcamDraggableDispatch, totalNumberOfStreams } = this.props;
+    let numItems = totalNumberOfStreams;
     if (numItems < 1 || !this.canvas || !this.grid) {
       return;
     }
@@ -143,7 +143,7 @@ class VideoList extends Component {
 
     const gridGutter = parseInt(window.getComputedStyle(this.grid)
       .getPropertyValue('grid-row-gap'), 10);
-    const hasFocusedItem = numItems > 2 && focusedId;
+    const hasFocusedItem = numItems >= 2 && focusedId;
     // Has a focused item so we need +3 cells
     if (hasFocusedItem) {
       numItems += 3;
@@ -308,12 +308,13 @@ class VideoList extends Component {
       onVideoItemMount,
       onVideoItemUnmount,
       swapLayout,
+      totalNumberOfStreams
     } = this.props;
     const { focusedId } = this.state;
 
-    const numOfStreams = streams.length;
+    const numOfStreams = totalNumberOfStreams;
     return streams.map((stream) => {
-      const { cameraId, userId, name } = stream;
+      const { cameraId, userId, name, display } = stream;
       const isFocused = focusedId === cameraId;
       const isFocusedIntlKey = !isFocused ? 'focus' : 'unfocus';
       const isMirrored = this.cameraIsMirrored(cameraId);
@@ -337,9 +338,10 @@ class VideoList extends Component {
       return (
         <div
           key={cameraId}
+          style={display ? {} : { display: "none" }}
           className={cx({
             [styles.videoListItem]: true,
-            [styles.focused]: focusedId === cameraId && numOfStreams > 2,
+            [styles.focused]: focusedId === cameraId && numOfStreams >= 2,
           })}
         >
           <VideoListItemContainer
@@ -366,28 +368,43 @@ class VideoList extends Component {
       streams,
       talker,
       isScreenSharing,
-      paginationEnabled
+      paginationEnabled,
+      currentVideoPageIndex,
+      totalNumberOfStreams
     } = this.props;
     const { focusedId } = this.state;
-    const numOfStreams = streams.length;
+    const numOfStreams = totalNumberOfStreams;
     const prevTalker = prevProps.talker;
-    const wasPaginationEnabled = prevProps.paginationEnabled; 
-    if (wasPaginationEnabled && !paginationEnabled ){
+    const wasPaginationEnabled = prevProps.paginationEnabled;
+    if (wasPaginationEnabled && !paginationEnabled) {
       this.unfocusVideo();
     }
     if (!paginationEnabled)
-      return 
+      return
 
-    if (numOfStreams < 3)
+    if (totalNumberOfStreams !== prevProps.totalNumberOfStreams)
+      this.setOptimalGrid()
+
+    if (numOfStreams < 2) {
+      if (focusedId)
+        this.unfocusVideo();
+
       return;
-      
+    }
+
     const isSharing = isScreenSharing();
     if (focusedId && isSharing) {
-        this.unfocusVideo();
+      this.unfocusVideo();
     }
     if (isSharing) return;
+
+    if (focusedId && currentVideoPageIndex)
+      this.unfocusVideo();
+
+    if (currentVideoPageIndex)
+      return;
     if (!talker || (prevTalker && talker === prevTalker)) return;
-    
+
     if (talker)
       streams.forEach((stream) => {
         const { cameraId, userId } = stream;
@@ -399,7 +416,7 @@ class VideoList extends Component {
       });
   }
   render() {
-    const { streams, intl } = this.props;
+    const { streams, intl, totalNumberOfStreams } = this.props;
     const { optimalGrid, autoplayBlocked } = this.state;
 
     const canvasClassName = cx({
@@ -420,7 +437,7 @@ class VideoList extends Component {
 
         {this.renderPreviousPageButton()}
 
-        {!streams.length ? null : (
+        {!totalNumberOfStreams ? null : (
           <div
             ref={(ref) => {
               this.grid = ref;

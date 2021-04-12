@@ -2,6 +2,7 @@ import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import VideoList from '/imports/ui/components/video-provider/video-list/component';
 import VideoService from '/imports/ui/components/video-provider/service';
+
 import Auth from '/imports/ui/services/auth';
 import VoiceUsers from '/imports/api/voice-users';
 import SettingsService from '/imports/ui/services/settings';
@@ -9,7 +10,7 @@ import SettingsService from '/imports/ui/services/settings';
 import {
   isVideoBroadcasting,
 }
-from '/imports/ui/components/screenshare/service';
+  from '/imports/ui/components/screenshare/service';
 
 const VideoListContainer = ({ children, ...props }) => {
   const { streams } = props;
@@ -28,40 +29,55 @@ const sortVoiceUsers = (a, b) => {
 };
 
 export default withTracker(props => {
+
   const meetingId = Auth.meetingID;
-  const usersTalking = VoiceUsers.find({ meetingId, joined: true, spoke: true }, {
+  const usersTalking = VoiceUsers.find({ meetingId, joined: true, spoke: true, talking: true }, {
     fields: {
-      callerName: 1,
-      talking: 1,
-      color: 1,
-      startTime: 1,
-      voiceUserId: 1,
-      muted: 1,
+      // callerName: 1,
+      // talking: 1,
+      // color: 1,
+      // startTime: 1,
+      // voiceUserId: 1,
+      // muted: 1,
       intId: 1,
     },
   }).fetch().sort(sortVoiceUsers);
 
   if (usersTalking.length) {
     const {
-      callerName, talking, color, voiceUserId, muted, intId,
+      // callerName, talking, color, voiceUserId, muted, intId,
+      intId
     } = usersTalking[0];
-    talker = {
-      intId,
-      color,
-      talking,
-      voiceUserId,
-      muted,
-      callerName,
-    };
+    // talker = {
+    //   intId,
+    //   color,
+    //   talking,
+    //   voiceUserId,
+    //   muted,
+    //   callerName,
+    // };
+    talker = intId;
   } else {
     talker = false;
   }
+  const {
+    streams,
+    totalNumberOfStreams
+  } = VideoService.getVideoStreams(talker);
+
+  // const {
+    // streams
+  // } = VideoService.getVideoStreams(false);
+      
+  console.log('video list container updated'); 
   return {
     // talker: props.talker,
     talker,
     paginationEnabled: SettingsService.application.paginationEnabled,
     isScreenSharing: isVideoBroadcasting,
-    streams: props.streams,
+    // streams: props.streams,
+    streams,
+    totalNumberOfStreams,
     currentVideoPageIndex: props.currentVideoPageIndex,
     onVideoItemMount: props.onVideoItemMount,
     onVideoItemUnmount: props.onVideoItemUnmount,

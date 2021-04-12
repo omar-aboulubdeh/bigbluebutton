@@ -40,6 +40,7 @@ const PAGINATION_THRESHOLDS_ENABLED = PAGINATION_THRESHOLDS_CONF.enabled;
 const TOKEN = '_';
 const ENABLE_PAGINATION_SESSION_VAR = 'enablePagination';
 
+var lastTalker = false;
 class VideoService {
   // Paginated streams: sort with following priority: local -> presenter -> alphabetic
   static sortPaginatedStreams(s1, s2) {
@@ -79,7 +80,6 @@ class VideoService {
 
     this.record = null;
     this.hackRecordViewer = null;
-
     // If the page isn't served over HTTPS there won't be mediaDevices
     if (navigator.mediaDevices) {
       this.updateNumberOfDevices = this.updateNumberOfDevices.bind(this);
@@ -242,17 +242,17 @@ class VideoService {
     return PAGINATION_TOGGLE_ENABLED && (this.getMyPageSize() > 0);
   }
 
-  isPaginationEnabled () {
+  isPaginationEnabled() {
     return Settings.application.paginationEnabled && (this.getMyPageSize() > 0);
   }
 
-  setNumberOfPages (numberOfPublishers, numberOfSubscribers, pageSize) {
+  setNumberOfPages(numberOfPublishers, numberOfSubscribers, pageSize, talker) {
     // Page size 0 means no pagination, return itself
     if (pageSize === 0) return 0;
 
     // Page size refers only to the number of subscribers. Publishers are always
     // shown, hence not accounted for
-    const nofPages = Math.ceil((numberOfSubscribers || numberOfPublishers) / pageSize);
+    const nofPages = Math.ceil((numberOfSubscribers || numberOfPublishers) / pageSize) + (talker || (numberOfPublishers && numberOfSubscribers));
 
     if (nofPages !== this.numberOfPages) {
       this.numberOfPages = nofPages;
@@ -262,25 +262,24 @@ class VideoService {
         this.getPreviousVideoPage();
       }
     }
-
     return this.numberOfPages;
   }
 
-  getNumberOfPages () {
+  getNumberOfPages() {
     return this.numberOfPages;
   }
 
-  setCurrentVideoPageIndex (newVideoPageIndex) {
+  setCurrentVideoPageIndex(newVideoPageIndex) {
     if (this.currentVideoPageIndex !== newVideoPageIndex) {
       this.currentVideoPageIndex = newVideoPageIndex;
     }
   }
 
-  getCurrentVideoPageIndex () {
+  getCurrentVideoPageIndex() {
     return this.currentVideoPageIndex;
   }
 
-  calculateNextPage () {
+  calculateNextPage() {
     if (this.numberOfPages === 0) {
       return 0;
     }
@@ -288,7 +287,7 @@ class VideoService {
     return ((this.currentVideoPageIndex + 1) % this.numberOfPages + this.numberOfPages) % this.numberOfPages;
   }
 
-  calculatePreviousPage () {
+  calculatePreviousPage() {
     if (this.numberOfPages === 0) {
       return 0;
     }
@@ -310,7 +309,7 @@ class VideoService {
     return this.currentVideoPageIndex;
   }
 
-  getPageSizeDictionary () {
+  getPageSizeDictionary() {
     // Dynamic page sizes are disabled. Fetch the stock page sizes.
     if (!PAGINATION_THRESHOLDS_ENABLED || PAGINATION_THRESHOLDS.length <= 0) {
       return !this.isMobile ? DESKTOP_PAGE_SIZES : MOBILE_PAGE_SIZES;
@@ -348,7 +347,7 @@ class VideoService {
     }
   }
 
-  setPageSize (size) {
+  setPageSize(size) {
     if (this.pageSize !== size) {
       this.pageSize = size;
     }
@@ -356,7 +355,7 @@ class VideoService {
     return this.pageSize;
   }
 
-  getMyPageSize () {
+  getMyPageSize() {
     let size;
     const myRole = this.getMyRole();
     const pageSizes = this.getPageSizeDictionary();
@@ -372,23 +371,59 @@ class VideoService {
     return this.setPageSize(size);
   }
 
-  getVideoPage (streams, pageSize) {
+  getVideoPage(streams, pageSize, talker) {
     // Publishers are taken into account for the page size calculations. They
     // also appear on every page.
+
     const [mine, others] = _.partition(streams, (vs => { return Auth.userID === vs.userId; }));
+    const [talkerVid, tmp] = _.partition(others, (vs => { return lastTalker === vs.userId; }));
+    const firstPage = [...talkerVid, ...mine]
 
     // Recalculate total number of pages
-    this.setNumberOfPages(mine.length, others.length, pageSize);
-    const chunkIndex = this.currentVideoPageIndex * pageSize;
-    const paginatedStreams = others
+    this.setNumberOfPages(mine.length, tmp.length, pageSize, talkerVid.length);
+    // return streams
+    // .sort(VideoService.sortPaginatedStreams)
+
+
+    // if you want to return talkerVid only
+    // if (talkerVid.length) return talkerVid; 
+
+    if (firstPage.length && this.currentVideoPageIndex == 0) {
+      return streams.sort(VideoService.sortPaginatedStreams).map(s => {
+        return { ...s, display: firstPage.includes(s) }
+      })
+      // return firstPage.sort(VideoService.sortPaginatedStreams);
+    }
+    let chunkIndex = 0;
+
+    if (firstPage.length && this.currentVideoPageIndex > 0)
+      chunkIndex = (this.currentVideoPageIndex - 1) * pageSize;
+
+    if (!firstPage.length)
+      chunkIndex = this.currentVideoPageIndex * pageSize;
+
+    const paginatedStreams = tmp
       .sort(VideoService.sortPaginatedStreams)
       .slice(chunkIndex, (chunkIndex + pageSize)) || [];
     const streamsOnPage = [...mine, ...paginatedStreams];
 
+    return streams.sort(VideoService.sortPaginatedStreams).map(s => {
+      return { ...s, display: streamsOnPage.includes(s) }
+    })
+
     return streamsOnPage;
+
   }
 
-  getVideoStreams() {
+  getVideoStreams(talker = false) {
+
+    if (talker && talker !== true && talker != lastTalker)
+      _.throttle(() => {
+        lastTalker = talker;
+        return true; 
+      }, 1000)();
+
+    console.log('video service invoked');
     let streams = VideoStreams.find(
       { meetingId: Auth.meetingID },
       {
@@ -408,6 +443,7 @@ class VideoService {
       cameraId: vs.stream,
       userId: vs.userId,
       name: vs.name,
+      display: true
     }));
 
     const pageSize = this.getMyPageSize();
@@ -422,11 +458,11 @@ class VideoService {
       };
     }
 
-    const paginatedStreams = this.getVideoPage(mappedStreams, pageSize);
-    return { streams: paginatedStreams, totalNumberOfStreams: mappedStreams.length };
+    const paginatedStreams = this.getVideoPage(mappedStreams, pageSize, lastTalker);
+    return { streams: paginatedStreams, totalNumberOfStreams: paginatedStreams.filter(s => (s.display)).length };
   }
 
-  stopConnectingStream () {
+  stopConnectingStream() {
     this.deviceId = null;
     this.isConnecting = false;
   }
@@ -470,7 +506,7 @@ class VideoService {
     return streams.find(s => s.stream === stream);
   }
 
-  getMyRole () {
+  getMyRole() {
     return Users.findOne({ userId: Auth.userID },
       { fields: { role: 1 } })?.role;
   }
@@ -646,7 +682,7 @@ class VideoService {
       meteorDisconnected: !Meteor.status().connected
     };
     const locksKeys = Object.keys(locks);
-    const disableReason = locksKeys.filter( i => locks[i]).shift();
+    const disableReason = locksKeys.filter(i => locks[i]).shift();
     return disableReason ? disableReason : false;
   }
 
@@ -691,12 +727,12 @@ class VideoService {
     return VideoStreams.find({ meetingId: Auth.meetingID }).count();
   }
 
-  isProfileBetter (newProfileId, originalProfileId) {
+  isProfileBetter(newProfileId, originalProfileId) {
     return CAMERA_PROFILES.findIndex(({ id }) => id === newProfileId)
       > CAMERA_PROFILES.findIndex(({ id }) => id === originalProfileId);
   }
 
-  applyBitrate (peer, bitrate) {
+  applyBitrate(peer, bitrate) {
     const peerConnection = peer.peerConnection;
     if ('RTCRtpSender' in window
       && 'setParameters' in window.RTCRtpSender.prototype
@@ -734,7 +770,7 @@ class VideoService {
 
   // Some browsers (mainly iOS Safari) garble the stream if a constraint is
   // reconfigured without propagating previous height/width info
-  reapplyResolutionIfNeeded (track, constraints) {
+  reapplyResolutionIfNeeded(track, constraints) {
     if (typeof track.getSettings !== 'function') {
       return constraints;
     }
@@ -752,7 +788,7 @@ class VideoService {
     }
   }
 
-  applyCameraProfile (peer, profileId) {
+  applyCameraProfile(peer, profileId) {
     const profile = CAMERA_PROFILES.find(targetProfile => targetProfile.id === profileId);
 
     if (!profile) {
@@ -779,7 +815,7 @@ class VideoService {
     if (constraints && typeof constraints === 'object') {
       peer.peerConnection.getSenders().forEach(sender => {
         const { track } = sender;
-        if (track && track.kind === 'video' && typeof track.applyConstraints  === 'function') {
+        if (track && track.kind === 'video' && typeof track.applyConstraints === 'function') {
           let normalizedVideoConstraints = this.reapplyResolutionIfNeeded(track, constraints);
           track.applyConstraints(normalizedVideoConstraints)
             .then(() => {
@@ -800,11 +836,11 @@ class VideoService {
     }
   }
 
-  getThreshold (numberOfPublishers) {
+  getThreshold(numberOfPublishers) {
     let targetThreshold = { threshold: 0, profile: 'original' };
     let finalThreshold = { threshold: 0, profile: 'original' };
 
-    for(let mapIndex = 0; mapIndex < CAMERA_QUALITY_THRESHOLDS.length; mapIndex++) {
+    for (let mapIndex = 0; mapIndex < CAMERA_QUALITY_THRESHOLDS.length; mapIndex++) {
       targetThreshold = CAMERA_QUALITY_THRESHOLDS[mapIndex];
       if (targetThreshold.threshold <= numberOfPublishers) {
         finalThreshold = targetThreshold;
@@ -822,7 +858,7 @@ export default {
   exitVideo: () => videoService.exitVideo(),
   joinVideo: deviceId => videoService.joinVideo(deviceId),
   stopVideo: cameraId => videoService.stopVideo(cameraId),
-  getVideoStreams: () => videoService.getVideoStreams(),
+  getVideoStreams: (talker) => videoService.getVideoStreams(talker),
   getInfo: () => videoService.getInfo(),
   getMyStream: deviceId => videoService.getMyStream(deviceId),
   isUserLocked: () => videoService.isUserLocked(),
