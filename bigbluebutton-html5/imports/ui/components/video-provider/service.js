@@ -15,6 +15,7 @@ import getFromUserSettings from '/imports/ui/services/users-settings';
 import VideoPreviewService from '../video-preview/service';
 import Storage from '/imports/ui/services/storage/session';
 import logger from '/imports/startup/client/logger';
+// import { toggleMinimizeScreenShare, isScreenShareMinimized } from '/imports/ui/components/screenshare/service'
 
 import _ from 'lodash';
 
@@ -70,6 +71,7 @@ class VideoService {
       isConnected: false,
       currentVideoPageIndex: 0,
       numberOfPages: 0,
+      screenShareMinimized: 0,
       pageSize: 0,
     });
     this.userParameterProfile = null;
@@ -246,13 +248,14 @@ class VideoService {
     return Settings.application.paginationEnabled && (this.getMyPageSize() > 0);
   }
 
-  setNumberOfPages(numberOfPublishers, numberOfSubscribers, pageSize, talker) {
+  setNumberOfPages(talker, numberOfSubscribers, pageSize,) {
     // Page size 0 means no pagination, return itself
     if (pageSize === 0) return 0;
 
     // Page size refers only to the number of subscribers. Publishers are always
     // shown, hence not accounted for
-    const nofPages = Math.ceil((numberOfSubscribers || numberOfPublishers) / pageSize) + (talker || (numberOfPublishers && numberOfSubscribers));
+    // const nofPages = Math.ceil((numberOfSubscribers || numberOfPublishers) / pageSize) + (talker || (numberOfPublishers && numberOfSubscribers));
+    const nofPages = numberOfSubscribers == 1 ? 1 : Math.ceil(numberOfSubscribers / pageSize) + talker;
 
     if (nofPages !== this.numberOfPages) {
       this.numberOfPages = nofPages;
@@ -303,12 +306,15 @@ class VideoService {
   }
 
   getPreviousVideoPage() {
+    if (this.currentVideoPageIndex == 0 && this.isScreenShareMinimized()) {
+      this.toggleMinimizeScreenShare();
+      return;
+    }
     const previousPage = this.calculatePreviousPage();
     this.setCurrentVideoPageIndex(previousPage);
 
     return this.currentVideoPageIndex;
   }
-
   getPageSizeDictionary() {
     // Dynamic page sizes are disabled. Fetch the stock page sizes.
     if (!PAGINATION_THRESHOLDS_ENABLED || PAGINATION_THRESHOLDS.length <= 0) {
@@ -375,12 +381,12 @@ class VideoService {
     // Publishers are taken into account for the page size calculations. They
     // also appear on every page.
 
-    const [mine, others] = _.partition(streams, (vs => { return Auth.userID === vs.userId; }));
-    const [talkerVid, tmp] = _.partition(others, (vs => { return lastTalker === vs.userId; }));
-    const firstPage = [...talkerVid, ...mine]
+    // const [mine, others] = _.partition(streams, (vs => { return Auth.userID === vs.userId; }));
+    const [talkerVid, others] = _.partition(streams, (vs => { return lastTalker === vs.userId; }));
+    // const firstPage = [...talkerVid, ...mine]
 
     // Recalculate total number of pages
-    this.setNumberOfPages(mine.length, tmp.length, pageSize, talkerVid.length);
+    this.setNumberOfPages(talkerVid.length, streams.length, pageSize);
     // return streams
     // .sort(VideoService.sortPaginatedStreams)
 
@@ -388,24 +394,24 @@ class VideoService {
     // if you want to return talkerVid only
     // if (talkerVid.length) return talkerVid; 
 
-    if (firstPage.length && this.currentVideoPageIndex == 0) {
+    if (talkerVid.length && this.currentVideoPageIndex == 0) {
       return streams.sort(VideoService.sortPaginatedStreams).map(s => {
-        return { ...s, display: firstPage.includes(s) }
+        return { ...s, display: talkerVid.includes(s) }
       })
       // return firstPage.sort(VideoService.sortPaginatedStreams);
     }
     let chunkIndex = 0;
 
-    if (firstPage.length && this.currentVideoPageIndex > 0)
+    if (talkerVid.length && this.currentVideoPageIndex > 0)
       chunkIndex = (this.currentVideoPageIndex - 1) * pageSize;
 
-    if (!firstPage.length)
+    if (!talkerVid.length)
       chunkIndex = this.currentVideoPageIndex * pageSize;
 
-    const paginatedStreams = tmp
+    const paginatedStreams = streams
       .sort(VideoService.sortPaginatedStreams)
       .slice(chunkIndex, (chunkIndex + pageSize)) || [];
-    const streamsOnPage = [...mine, ...paginatedStreams];
+    const streamsOnPage = paginatedStreams;
 
     return streams.sort(VideoService.sortPaginatedStreams).map(s => {
       return { ...s, display: streamsOnPage.includes(s) }
@@ -417,11 +423,13 @@ class VideoService {
 
   getVideoStreams(talker = false) {
 
-    if (talker && talker !== true && talker != lastTalker)
-      _.throttle(() => {
+    if (talker && talker !== true && talker != lastTalker) {
+      _.debounce(() => {
         lastTalker = talker;
-        return true; 
+        return true;
       }, 1000)();
+    }
+
 
     console.log('video service invoked');
     let streams = VideoStreams.find(
@@ -849,6 +857,12 @@ class VideoService {
 
     return finalThreshold;
   }
+  toggleMinimizeScreenShare() {
+    return this.screenShareMinimized = !this.screenShareMinimized;
+  }
+  isScreenShareMinimized() {
+    return this.screenShareMinimized;
+  }
 }
 
 const videoService = new VideoService();
@@ -890,4 +904,6 @@ export default {
   getNextVideoPage: () => videoService.getNextVideoPage(),
   getPageChangeDebounceTime: () => { return PAGE_CHANGE_DEBOUNCE_TIME },
   shouldRenderPaginationToggle: () => videoService.shouldRenderPaginationToggle(),
+  toggleMinimizeScreenShare: () => videoService.toggleMinimizeScreenShare(),
+  isScreenShareMinimized: () => videoService.isScreenShareMinimized(),
 };
