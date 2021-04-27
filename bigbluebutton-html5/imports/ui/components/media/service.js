@@ -5,6 +5,8 @@ import Auth from '/imports/ui/services/auth';
 import Users from '/imports/api/users';
 import Settings from '/imports/ui/services/settings';
 import getFromUserSettings from '/imports/ui/services/users-settings';
+// import { isScreenShareMinimized } from '/imports/ui/components/screenshare/service'
+
 
 const LAYOUT_CONFIG = Meteor.settings.public.layout;
 const KURENTO_CONFIG = Meteor.settings.public.kurento;
@@ -29,6 +31,7 @@ function shouldShowWhiteboard() {
 function shouldShowScreenshare() {
   const { viewScreenshare } = Settings.dataSaving;
   const enableScreensharing = getFromUserSettings('bbb_enable_screen_sharing', KURENTO_CONFIG.enableScreensharing);
+  // return enableScreensharing && viewScreenshare && isVideoBroadcasting() && (!isScreenShareMinimized() || isUserPresenter());
   return enableScreensharing && viewScreenshare && isVideoBroadcasting();
 }
 

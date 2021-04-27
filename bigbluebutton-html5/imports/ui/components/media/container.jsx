@@ -18,6 +18,9 @@ import Storage from '../../services/storage/session';
 import { withLayoutConsumer } from '/imports/ui/components/layout/context';
 import Auth from '/imports/ui/services/auth';
 import breakoutService from '/imports/ui/components/breakout-room/service';
+import TalkerVideoContainer from '/imports/ui/components/talker-video/container';
+
+
 
 const LAYOUT_CONFIG = Meteor.settings.public.layout;
 const KURENTO_CONFIG = Meteor.settings.public.kurento;
@@ -156,6 +159,7 @@ export default withLayoutConsumer(withModalMounter(withTracker(() => {
     userWasInBreakout = userIsInBreakout;
   }
 
+  console.log('media container update');
   const { streams: usersVideo } = VideoService.getVideoStreams();
   data.usersVideo = usersVideo;
 
@@ -167,7 +171,10 @@ export default withLayoutConsumer(withModalMounter(withTracker(() => {
   data.singleWebcam = (usersVideo.length < 2);
 
   data.isScreensharing = MediaService.isVideoBroadcasting();
-  data.swapLayout = (getSwapLayout() || !hasPresentation) && shouldEnableSwapLayout();
+  const showTalker = usersVideo.length && !MediaService.shouldShowExternalVideo() && !MediaService.shouldShowScreenshare() && VideoService.isPaginationEnabled();
+
+  data.swapLayout = !showTalker && (getSwapLayout() || !hasPresentation) && shouldEnableSwapLayout();
+  // data.swapLayout = false;
   data.disableVideo = !viewParticipantsWebcams;
 
   if (data.swapLayout) {
@@ -181,6 +188,21 @@ export default withLayoutConsumer(withModalMounter(withTracker(() => {
         isPresenter={MediaService.isUserPresenter()}
       />
     );
+  }
+
+  if (showTalker) {
+    // data.children = <VideoProviderContainer swapLayout={data.swapLayout} />
+    // const [ref, reflection] = useMirror({ className: "Frame" });
+    data.hideOverlay = false;
+    // data.children = <div
+      // id="talkerVideoContainer"
+      // 
+    // >
+      {/* </div>; */}
+    data.children = [<TalkerVideoContainer display={true} swapLayout={data.swapLayout} />]
+  }else{
+    data.children = [<TalkerVideoContainer display={false} swapLayout={data.swapLayout} />, data.children]
+
   }
 
   data.webcamsPlacement = Storage.getItem('webcamsPlacement');

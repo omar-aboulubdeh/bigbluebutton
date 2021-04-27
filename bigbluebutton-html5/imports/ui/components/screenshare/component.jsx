@@ -11,6 +11,7 @@ import cx from 'classnames';
 import playAndRetry from '/imports/utils/mediaElementPlayRetry';
 import PollingContainer from '/imports/ui/components/polling/container';
 import { withLayoutConsumer } from '/imports/ui/components/layout/context';
+
 import {
   SCREENSHARE_MEDIA_ELEMENT_NAME,
   screenshareHasEnded,
@@ -23,6 +24,8 @@ import {
   subscribeToStreamStateChange,
   unsubscribeFromStreamStateChange,
 } from '/imports/ui/services/bbb-webrtc-sfu/stream-state-service';
+import Button from '/imports/ui/components/button/component';
+
 
 const intlMessages = defineMessages({
   screenShareLabel: {
@@ -34,6 +37,9 @@ const intlMessages = defineMessages({
   },
   autoplayAllowLabel: {
     id: 'app.media.screenshare.autoplayAllowLabel',
+  },
+  nextPageLabel: {
+    id: 'app.video.pagination.nextPage',
   },
 });
 
@@ -61,7 +67,7 @@ class ScreenshareComponent extends React.Component {
     screenshareHasStarted();
     this.screenshareContainer.addEventListener('fullscreenchange', this.onFullscreenChange);
     // Autoplay failure handling
-    window.addEventListener('screensharePlayFailed', this.handlePlayElementFailed);
+    window.addEventListener('screensharePlayF ailed', this.handlePlayElementFailed);
     // Stream health state tracker to propagate UI changes on reconnections
     subscribeToStreamStateChange('screenshare', this.onStreamStateChange);
     // Attaches the local stream if it exists to serve as the local presenter preview
@@ -76,9 +82,9 @@ class ScreenshareComponent extends React.Component {
       screenshareHasEnded();
     }
   }
-  componentWillMount(){
+  componentWillMount() {
     const { toggleSwapLayout } = this.props;
-    toggleSwapLayout(); 
+    toggleSwapLayout();
   }
   componentWillUnmount() {
     const {
@@ -96,7 +102,7 @@ class ScreenshareComponent extends React.Component {
     unsubscribeFromStreamStateChange('screenshare', this.onStreamStateChange);
   }
 
-  onStreamStateChange (event) {
+  onStreamStateChange(event) {
     const { streamState } = event.detail;
     const { isStreamHealthy } = this.state;
 
@@ -191,11 +197,30 @@ class ScreenshareComponent extends React.Component {
       />
     );
   }
+  renderNextPageButton() {
+    // const {
+    // isScreenShareMinimized 
+    // } = this.props;
+    const { intl, toggleMinimizeScreenShare } = this.props;
 
+    return (
+      <Button
+        role="button"
+        aria-label={intl.formatMessage(intlMessages.nextPageLabel)}
+        color="primary"
+        icon="right_arrow"
+        size="md"
+        onClick={() => (toggleMinimizeScreenShare())}
+        label={intl.formatMessage(intlMessages.nextPageLabel)}
+        hideLabel
+        className={cx(styles.nextPage)}
+      />
+    );
+  }
   render() {
-
+ 
     const { loaded, autoplayBlocked, isFullscreen, isStreamHealthy } = this.state;
-    const { intl, isPresenter, isGloballyBroadcasting, toggleSwapLayout } = this.props;
+    const { intl, isPresenter, isGloballyBroadcasting, toggleSwapLayout, isScreenShareMinimized } = this.props;
     // toggleSwapLayout(); 
     // Conditions to render the (re)connecting spinner and the unhealthy stream
     // grayscale:
@@ -203,6 +228,7 @@ class ScreenshareComponent extends React.Component {
     // 2 - The user is a presenter and the stream wasn't globally broadcasted yet
     // 3 - The media was loaded, the stream was globally broadcasted BUT the stream
     // state transitioned to an unhealthy stream. tl;dr: screen sharing reconnection
+
     const shouldRenderConnectingState = !loaded
       || (isPresenter && !isGloballyBroadcasting)
       || !isStreamHealthy && loaded && isGloballyBroadcasting;
@@ -222,6 +248,7 @@ class ScreenshareComponent extends React.Component {
         : (this.renderAutoplayOverlay()),
       (
         <div
+          style={isScreenShareMinimized ? { display: 'none' } : {}}
           className={styles.screenshareContainer}
           key="screenshareContainer"
           ref={(ref) => { this.screenshareContainer = ref; }}
@@ -234,7 +261,7 @@ class ScreenshareComponent extends React.Component {
           <video
             id={SCREENSHARE_MEDIA_ELEMENT_NAME}
             key={SCREENSHARE_MEDIA_ELEMENT_NAME}
-            style={{ maxHeight: '100%', width: '100%', height: '100%' }}
+            style={{ maxHeight: '100%', height: '100%' }}
             playsInline
             onLoadedData={this.onLoadedData}
             ref={(ref) => { this.videoTag = ref; }}
@@ -243,8 +270,10 @@ class ScreenshareComponent extends React.Component {
             })}
             muted
           />
+          {/* { !isPresenter ? this.renderNextPageButton() : null} */}
         </div>
-      )]
+      ),
+      ]
     );
   }
 }

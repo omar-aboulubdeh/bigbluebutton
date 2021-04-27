@@ -81,14 +81,8 @@ export default class Media extends Component {
           className={!swapLayout ? contentClassName : overlayClassName}
           style={{
             maxHeight: usersVideo.length > 0
-            && (
-              webcamsPlacement !== 'left'
-              || webcamsPlacement !== 'right'
-            )
-            && (
-              webcamsPlacement === 'top'
-              || webcamsPlacement === 'bottom'
-            )
+            && ( webcamsPlacement !== 'left' || webcamsPlacement !== 'right' )
+            && ( webcamsPlacement === 'top' || webcamsPlacement === 'bottom' )
               ? '80%'
               : '100%',
             minHeight: isMobile && window.innerWidth > window.innerHeight ? '50%' : '20%',

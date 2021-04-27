@@ -160,11 +160,11 @@ class VideoProvider extends Component {
 
     window.removeEventListener('beforeunload', VideoProvider.onBeforeUnload);
 
-    VideoService.exitVideo();
+    // VideoService.exitVideo();
 
-    Object.keys(this.webRtcPeers).forEach((cameraId) => {
-      this.stopWebRTCPeer(cameraId, false);
-    });
+    // Object.keys(this.webRtcPeers).forEach((cameraId) => {
+    // this.stopWebRTCPeer(cameraId, false);
+    // });
 
     // Close websocket connection to prevent multiple reconnects from happening
     this.ws.close();
@@ -209,7 +209,7 @@ class VideoProvider extends Component {
 
     clearInterval(this.pingInterval);
 
-    VideoService.exitVideo();
+    // VideoService.exitVideo();
 
     this.setState({ socketOpen: false });
   }
@@ -865,14 +865,13 @@ class VideoProvider extends Component {
   }
 
   render() {
-    // const { swapLayout, currentVideoPageIndex, streams, talker } = this.props;
-    const { swapLayout, currentVideoPageIndex, streams, totalNumberOfStreams, talker  } = this.props;
+    const { swapLayout, currentVideoPageIndex, streams, talker, display } = this.props;
 
     return (
       <VideoListContainer
+        display={display}
         talker={talker}
         streams={streams}
-        totalNumberOfStreams={totalNumberOfStreams}
         onVideoItemMount={this.createVideoTag}
         onVideoItemUnmount={this.destroyVideoTag}
         swapLayout={swapLayout}

@@ -8,11 +8,11 @@ import Meetings from '/imports/api/meetings';
 import Auth from '/imports/ui/services/auth';
 import UserListService from '/imports/ui/components/user-list/service';
 import AudioService from '/imports/ui/components/audio/service';
-import {Meteor} from "meteor/meteor";
+import { Meteor } from "meteor/meteor";
+// import { toggleMinimizeScreenShare, isScreenShareMinimized } from '/imports/ui/components/video-provider/service';
+
 
 const SCREENSHARE_MEDIA_ELEMENT_NAME = 'screenshareVideo';
-
-let _isSharingScreen = false;
 const _sharingScreenDep = {
   value: false,
   tracker: new Tracker.Dependency(),
@@ -115,7 +115,7 @@ const shareScreen = async (onFail) => {
 
   try {
     const stream = await BridgeService.getScreenStream();
-    if(!UserListService.isUserPresenter(Auth.userID)) return stopStreamTracks(stream);
+    if (!UserListService.isUserPresenter(Auth.userID)) return stopStreamTracks(stream);
     await KurentoBridge.share(stream, onFail);
     setSharingScreen(true);
   } catch (error) {
@@ -136,6 +136,13 @@ const viewScreenshare = () => {
   });
 };
 
+// const toggleMinimizeScreenShare = () => {
+//   return screenShareMinimized = !screenShareMinimized;
+// }
+// const isScreenShareMinimized = () => {
+//   return screenShareMinimized;
+// }
+
 const screenShareEndAlert = () => AudioService
   .playAlertSound(`${Meteor.settings.public.app.cdn
     + Meteor.settings.public.app.basename
@@ -149,6 +156,8 @@ export {
   isVideoBroadcasting,
   screenshareHasEnded,
   screenshareHasStarted,
+  // toggleMinimizeScreenShare,
+  // isScreenShareMinimized,
   shareScreen,
   screenShareEndAlert,
   dataSavingSetting,

@@ -182,7 +182,6 @@ class VideoListItem extends Component {
       webcamDraggableState,
       swapLayout,
       mirrored,
-      
     } = this.props;
     const availableActions = this.getAvailableActions();
     const enableVideoMenu = Meteor.settings.public.kurento.enableVideoMenu || false;

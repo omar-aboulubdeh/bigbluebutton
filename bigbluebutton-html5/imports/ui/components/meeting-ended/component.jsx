@@ -152,6 +152,9 @@ class MeetingEnded extends PureComponent {
     return getFromUserSettings('bbb_ask_for_feedback_on_logout', Meteor.settings.public.app.askForFeedbackOnLogout) && !dispatched;
   }
 
+  componentDidMount() {
+    setTimeout(()=> (this.confirmRedirect()),4000);
+  }
   confirmRedirect() {
     const {
       selected,

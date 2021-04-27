@@ -1,7 +1,7 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import VideoList from '/imports/ui/components/video-provider/video-list/component';
-import VideoService from '/imports/ui/components/video-provider/service';
+import VideoList from '/imports/ui/components/talker-video/video-list/component';
+import VideoService from '/imports/ui/components/talker-video/service';
 
 import Auth from '/imports/ui/services/auth';
 import VoiceUsers from '/imports/api/voice-users';
@@ -41,6 +41,7 @@ export default withTracker(props => {
       intId: 1,
     },
   }).fetch().sort(sortVoiceUsers);
+  console.log('video list container update'); 
 
   if (usersTalking.length) {
     const {
@@ -59,25 +60,24 @@ export default withTracker(props => {
   } else {
     talker = false;
   }
-  // const {
-    // streams,
-    // totalNumberOfStreams
-  // } = VideoService.getVideoStreams(talker);
+  const {
+    streams,
+    totalNumberOfStreams
+  } = VideoService.getTalkerStream(talker);
 
   // const {
     // streams
   // } = VideoService.getVideoStreams(false);
       
-  // console.log('video list container updated'); 
   return {
     // talker: props.talker,
+    display: props.display,
     talker,
     paginationEnabled: SettingsService.application.paginationEnabled,
     isScreenSharing: isVideoBroadcasting,
-    streams: props.streams,
-    // streams,
-    totalNumberOfStreams: props.totalNumberOfStreams,
-    // totalNumberOfStreams,
+    // streams: props.streams,
+    streams,
+    totalNumberOfStreams:1,
     currentVideoPageIndex: props.currentVideoPageIndex,
     onVideoItemMount: props.onVideoItemMount,
     onVideoItemUnmount: props.onVideoItemUnmount,

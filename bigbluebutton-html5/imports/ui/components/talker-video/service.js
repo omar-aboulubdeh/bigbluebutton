@@ -248,14 +248,14 @@ class VideoService {
     return Settings.application.paginationEnabled && (this.getMyPageSize() > 0);
   }
 
-  setNumberOfPages(numberOfSubscribers, pageSize,) {
+  setNumberOfPages(talker, numberOfSubscribers, pageSize,) {
     // Page size 0 means no pagination, return itself
     if (pageSize === 0) return 0;
 
     // Page size refers only to the number of subscribers. Publishers are always
     // shown, hence not accounted for
     // const nofPages = Math.ceil((numberOfSubscribers || numberOfPublishers) / pageSize) + (talker || (numberOfPublishers && numberOfSubscribers));
-    const nofPages = numberOfSubscribers == 1 ? 1 : Math.ceil(numberOfSubscribers / pageSize);
+    const nofPages = numberOfSubscribers == 1 ? 1 : Math.ceil(numberOfSubscribers / pageSize) + talker;
 
     if (nofPages !== this.numberOfPages) {
       this.numberOfPages = nofPages;
@@ -377,17 +377,16 @@ class VideoService {
     return this.setPageSize(size);
   }
 
-  getVideoPage(streams, pageSize) {
+  getVideoPage(streams, pageSize, talker) {
     // Publishers are taken into account for the page size calculations. They
     // also appear on every page.
 
     // const [mine, others] = _.partition(streams, (vs => { return Auth.userID === vs.userId; }));
-    // const [talkerVid, others] = _.partition(streams, (vs => { return lastTalker === vs.userId; }));
+    const [talkerVid, others] = _.partition(streams, (vs => { return lastTalker === vs.userId; }));
     // const firstPage = [...talkerVid, ...mine]
 
     // Recalculate total number of pages
-    // this.setNumberOfPages(talkerVid.length, streams.length, pageSize);
-    this.setNumberOfPages(streams.length, pageSize);
+    this.setNumberOfPages(talkerVid.length, streams.length, pageSize);
     // return streams
     // .sort(VideoService.sortPaginatedStreams)
 
@@ -395,19 +394,19 @@ class VideoService {
     // if you want to return talkerVid only
     // if (talkerVid.length) return talkerVid; 
 
-    // if (talkerVid.length && this.currentVideoPageIndex == 0) {
-    //   return streams.sort(VideoService.sortPaginatedStreams).map(s => {
-    //     return { ...s, display: talkerVid.includes(s) }
-    //   })
-    //   // return firstPage.sort(VideoService.sortPaginatedStreams);
-    // }
+    if (talkerVid.length && this.currentVideoPageIndex == 0) {
+      return streams.sort(VideoService.sortPaginatedStreams).map(s => {
+        return { ...s, display: talkerVid.includes(s) }
+      })
+      // return firstPage.sort(VideoService.sortPaginatedStreams);
+    }
     let chunkIndex = 0;
 
-    // if (talkerVid.length && this.currentVideoPageIndex > 0)
-    //   chunkIndex = (this.currentVideoPageIndex - 1) * pageSize;
+    if (talkerVid.length && this.currentVideoPageIndex > 0)
+      chunkIndex = (this.currentVideoPageIndex - 1) * pageSize;
 
-    // if (!talkerVid.length)
-    chunkIndex = this.currentVideoPageIndex * pageSize;
+    if (!talkerVid.length)
+      chunkIndex = this.currentVideoPageIndex * pageSize;
 
     const paginatedStreams = streams
       .sort(VideoService.sortPaginatedStreams)
@@ -417,16 +416,21 @@ class VideoService {
     return streams.sort(VideoService.sortPaginatedStreams).map(s => {
       return { ...s, display: streamsOnPage.includes(s) }
     })
+
     return streamsOnPage;
+
   }
 
-  getVideoStreams() {
-    // if (talker && talker !== true && talker != lastTalker) {
-    //   // _.debounce(() => {
-    //   lastTalker = talker;
-    //   // return true;
-    //   // }, 1000)();
-    // }
+  getVideoStreams(talker = false) {
+
+    if (talker && talker !== true && talker != lastTalker) {
+      // _.debounce(() => {
+      lastTalker = talker;
+      // return true;
+      // }, 1000)();
+    }
+
+
     console.log('video service invoked');
     let streams = VideoStreams.find(
       { meetingId: Auth.meetingID },
@@ -462,9 +466,10 @@ class VideoService {
       };
     }
 
-    const paginatedStreams = this.getVideoPage(mappedStreams, pageSize);
+    const paginatedStreams = this.getVideoPage(mappedStreams, pageSize, lastTalker);
     return { streams: paginatedStreams, totalNumberOfStreams: paginatedStreams.filter(s => (s.display)).length };
   }
+
   getTalkerStream(talker = false) {
 
     if (talker && talker !== true && talker != lastTalker) {
@@ -473,8 +478,6 @@ class VideoService {
       // return true;
       // }, 1000)();
     }
-    if (!lastTalker) return { streams: [] };
-
     console.log('talker Stream invoked');
     let streams = VideoStreams.find(
       { meetingId: Auth.meetingID },
@@ -488,19 +491,24 @@ class VideoService {
     const connectingStream = this.getConnectingStream(streams);
     if (connectingStream) streams.push(connectingStream);
 
+    if (!streams.filter(e => e.userId === lastTalker).length && streams.length){
+      lastTalker = streams[0].userId
+    }
+
     const mappedStreams = streams.map(vs => ({
       cameraId: vs.stream,
       userId: vs.userId,
       name: vs.name,
-      display: vs.userId == lastTalker
+      display: vs.userId === lastTalker
     }));
 
     // return streams.sort(VideoService.sortPaginatedStreams).map(s => {
-    //   return { ...s, display: talkerVid.includes(s) }
+      // return { ...s, display: talkerVid.includes(s) }
     // })
-    // return {
-    //   streams: mappedStreams.filter(vs => vs.userId == lastTalker),
-    // };
+    return {
+      streams: mappedStreams.sort(VideoService.sortMeshStreams),
+      totalNumberOfStreams: 1
+    };
   }
 
   stopConnectingStream() {
@@ -905,7 +913,7 @@ export default {
   exitVideo: () => videoService.exitVideo(),
   joinVideo: deviceId => videoService.joinVideo(deviceId),
   stopVideo: cameraId => videoService.stopVideo(cameraId),
-  getVideoStreams: () => videoService.getVideoStreams(),
+  getVideoStreams: (talker) => videoService.getVideoStreams(talker),
   getTalkerStream: (talker) => videoService.getTalkerStream(talker),
   getInfo: () => videoService.getInfo(),
   getMyStream: deviceId => videoService.getMyStream(deviceId),

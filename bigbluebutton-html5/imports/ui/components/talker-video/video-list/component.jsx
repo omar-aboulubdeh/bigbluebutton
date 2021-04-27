@@ -22,7 +22,6 @@ const propTypes = {
   numberOfPages: PropTypes.number.isRequired,
   currentVideoPageIndex: PropTypes.number.isRequired,
 };
-// const [usingPortal, setUsingPortal] = React.useState(false);
 
 const intlMessages = defineMessages({
   focusLabel: {
@@ -308,8 +307,7 @@ class VideoList extends Component {
       onVideoItemMount,
       onVideoItemUnmount,
       swapLayout,
-      totalNumberOfStreams,
-      talker
+      totalNumberOfStreams
     } = this.props;
     const { focusedId } = this.state;
 
@@ -336,86 +334,88 @@ class VideoList extends Component {
         });
       }
 
-      return <div
-        key={cameraId}
-        style={display ? {} : { display: "none" }}
-        className={cx({
-          [styles.videoListItem]: true,
-          [styles.focused]: focusedId === cameraId && numOfStreams >= 2,
-        })}
-      >
-        <VideoListItemContainer
-          numOfStreams={numOfStreams}
-          cameraId={cameraId}
-          userId={userId}
-          name={name}
-          mirrored={isMirrored}
-          actions={actions}
-          onVideoItemMount={(videoRef) => {
-            this.handleCanvasResize();
-            onVideoItemMount(cameraId, videoRef);
-          }}
-          onVideoItemUnmount={onVideoItemUnmount}
-          swapLayout={swapLayout}
-        />
-      </div>
+      return (
+        <div
+          key={cameraId}
+          style={display ? {} : { display: "none" }}
+          className={cx({
+            [styles.videoListItem]: true,
+            [styles.focused]: focusedId === cameraId && numOfStreams >= 2,
+          })}
+        >
+          <VideoListItemContainer
+            numOfStreams={numOfStreams}
+            cameraId={cameraId}
+            userId={userId}
+            name={name}
+            mirrored={isMirrored}
+            actions={actions}
+            onVideoItemMount={(videoRef) => {
+              this.handleCanvasResize();
+              onVideoItemMount(cameraId, videoRef);
+            }}
+            onVideoItemUnmount={onVideoItemUnmount}
+            swapLayout={swapLayout}
+          />
+        </div>
+      );
     });
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const {
-  //     streams,
-  //     talker,
-  //     isScreenSharing,
-  //     paginationEnabled,
-  //     currentVideoPageIndex,
-  //     totalNumberOfStreams
-  //   } = this.props;
-  //   const { focusedId } = this.state;
-  //   const numOfStreams = totalNumberOfStreams;
-  //   const prevTalker = prevProps.talker;
-  //   const wasPaginationEnabled = prevProps.paginationEnabled;
-  //   if (wasPaginationEnabled && !paginationEnabled) {
-  //     this.unfocusVideo();
-  //   }
-  //   if (!paginationEnabled)
-  //     return
+  componentDidUpdate(prevProps) {
+    const {
+      streams,
+      talker,
+      isScreenSharing,
+      paginationEnabled,
+      currentVideoPageIndex,
+      totalNumberOfStreams
+    } = this.props;
+    const { focusedId } = this.state;
+    const numOfStreams = totalNumberOfStreams;
+    const prevTalker = prevProps.talker;
+    const wasPaginationEnabled = prevProps.paginationEnabled;
+    if (wasPaginationEnabled && !paginationEnabled) {
+      this.unfocusVideo();
+    }
+    if (!paginationEnabled)
+      return
 
-  //   if (totalNumberOfStreams !== prevProps.totalNumberOfStreams)
-  //     this.setOptimalGrid()
+    if (totalNumberOfStreams !== prevProps.totalNumberOfStreams)
+      this.setOptimalGrid()
 
-  //   if (numOfStreams < 2) {
-  //     if (focusedId)
-  //       this.unfocusVideo();
+    if (numOfStreams < 2) {
+      if (focusedId)
+        this.unfocusVideo();
 
-  //     return;
-  //   }
+      return;
+    }
 
-  //   const isSharing = isScreenSharing();
-  //   if (focusedId && isSharing) {
-  //     this.unfocusVideo();
-  //   }
-  //   if (isSharing) return;
+    const isSharing = isScreenSharing();
+    if (focusedId && isSharing) {
+      this.unfocusVideo();
+    }
+    if (isSharing) return;
 
-  //   if (focusedId && currentVideoPageIndex)
-  //     this.unfocusVideo();
+    if (focusedId && currentVideoPageIndex)
+      this.unfocusVideo();
 
-  //   if (currentVideoPageIndex)
-  //     return;
-  //   if (!talker || (prevTalker && talker === prevTalker)) return;
+    if (currentVideoPageIndex)
+      return;
+    if (!talker || (prevTalker && talker === prevTalker)) return;
 
-  //   if (talker)
-  //     streams.forEach((stream) => {
-  //       const { cameraId, userId } = stream;
-  //       if (userId === talker) {
-  //         // here is my magic :D
-  //         if (focusedId != cameraId)
-  //           this.handleVideoFocus(cameraId);
-  //       }
-  //     });
-  // }
+    if (talker)
+      streams.forEach((stream) => {
+        const { cameraId, userId } = stream;
+        if (userId === talker) {
+          // here is my magic :D
+          if (focusedId != cameraId)
+            this.handleVideoFocus(cameraId);
+        }
+      });
+  }
   render() {
-    const { streams, intl, totalNumberOfStreams } = this.props;
+    const { streams, intl, totalNumberOfStreams, display } = this.props;
     const { optimalGrid, autoplayBlocked } = this.state;
 
     const canvasClassName = cx({
@@ -426,9 +426,9 @@ class VideoList extends Component {
       [styles.videoList]: true,
     });
 
-
     return (
       <div
+        style={!display ? { display: 'none' } : {}}
         ref={(ref) => {
           this.canvas = ref;
         }}
