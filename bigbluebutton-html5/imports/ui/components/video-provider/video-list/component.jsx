@@ -362,58 +362,59 @@ class VideoList extends Component {
     });
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const {
-  //     streams,
-  //     talker,
-  //     isScreenSharing,
-  //     paginationEnabled,
-  //     currentVideoPageIndex,
-  //     totalNumberOfStreams
-  //   } = this.props;
-  //   const { focusedId } = this.state;
-  //   const numOfStreams = totalNumberOfStreams;
-  //   const prevTalker = prevProps.talker;
-  //   const wasPaginationEnabled = prevProps.paginationEnabled;
-  //   if (wasPaginationEnabled && !paginationEnabled) {
-  //     this.unfocusVideo();
-  //   }
-  //   if (!paginationEnabled)
-  //     return
+  componentDidUpdate(prevProps) {
+    const {
+      //     streams,
+      //     talker,
+      //     isScreenSharing,
+      paginationEnabled,
+      //     currentVideoPageIndex,
+      //     totalNumberOfStreams
+    } = this.props;
+    //   const { focusedId } = this.state;
+    //   const numOfStreams = totalNumberOfStreams;
+    //   const prevTalker = prevProps.talker;
+    const wasPaginationEnabled = prevProps.paginationEnabled;
+    if (wasPaginationEnabled !== paginationEnabled) {
+      this.setOptimalGrid()
+      // this.unfocusVideo();
+    }
+    // if (!paginationEnabled)
+    // return
 
-  //   if (totalNumberOfStreams !== prevProps.totalNumberOfStreams)
-  //     this.setOptimalGrid()
+    //   if (totalNumberOfStreams !== prevProps.totalNumberOfStreams)
+    //     this.setOptimalGrid()
 
-  //   if (numOfStreams < 2) {
-  //     if (focusedId)
-  //       this.unfocusVideo();
+    //   if (numOfStreams < 2) {
+    //     if (focusedId)
+    //       this.unfocusVideo();
 
-  //     return;
-  //   }
+    //     return;
+    //   }
 
-  //   const isSharing = isScreenSharing();
-  //   if (focusedId && isSharing) {
-  //     this.unfocusVideo();
-  //   }
-  //   if (isSharing) return;
+    //   const isSharing = isScreenSharing();
+    //   if (focusedId && isSharing) {
+    //     this.unfocusVideo();
+    //   }
+    //   if (isSharing) return;
 
-  //   if (focusedId && currentVideoPageIndex)
-  //     this.unfocusVideo();
+    //   if (focusedId && currentVideoPageIndex)
+    //     this.unfocusVideo();
 
-  //   if (currentVideoPageIndex)
-  //     return;
-  //   if (!talker || (prevTalker && talker === prevTalker)) return;
+    //   if (currentVideoPageIndex)
+    //     return;
+    //   if (!talker || (prevTalker && talker === prevTalker)) return;
 
-  //   if (talker)
-  //     streams.forEach((stream) => {
-  //       const { cameraId, userId } = stream;
-  //       if (userId === talker) {
-  //         // here is my magic :D
-  //         if (focusedId != cameraId)
-  //           this.handleVideoFocus(cameraId);
-  //       }
-  //     });
-  // }
+    //   if (talker)
+    //     streams.forEach((stream) => {
+    //       const { cameraId, userId } = stream;
+    //       if (userId === talker) {
+    //         // here is my magic :D
+    //         if (focusedId != cameraId)
+    //           this.handleVideoFocus(cameraId);
+    //       }
+    //     });
+  }
   render() {
     const { streams, intl, totalNumberOfStreams } = this.props;
     const { optimalGrid, autoplayBlocked } = this.state;
