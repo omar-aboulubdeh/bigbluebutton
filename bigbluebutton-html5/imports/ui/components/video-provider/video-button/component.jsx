@@ -81,7 +81,8 @@ const JoinVideoButton = ({
       hideLabel
       color={VideoService.hasVideoStream() ? 'primary' : 'default'}
       icon={VideoService.hasVideoStream() ? 'video' : 'video_off'}
-      ghost={!VideoService.hasVideoStream()}
+      // ghost={!VideoService.hasVideoStream()}
+      ghost
       size="lg"
       circle
       disabled={!!disableReason}

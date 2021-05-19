@@ -206,9 +206,9 @@ public:
       #   frameRate: requested framerate
       - id: low-u30
         name: low-u30
-        # default: true
+        default: true
         bitrate: 30
-        hidden: true
+        # hidden: true
         constraints:
           frameRate: 1
       - id: low-u25
@@ -248,7 +248,7 @@ public:
         bitrate: 100
       - id: medium
         name: Medium
-        default: true
+        # default: true
         # default: false
         bitrate: 200
       - id: high
@@ -303,12 +303,12 @@ public:
       # PUBLISHERS aren't accounted for .
       # A page size of 0 (zero) means that the page size is unlimited (disabled).
       desktopPageSizes:
-        moderator: 4
-        viewer: 4
+        moderator: 2
+        viewer: 2
       # video page sizes for MOBILE endpoints
       mobilePageSizes:
-        moderator: 4
-        viewer: 4
+        moderator: 2
+        viewer: 2
     paginationThresholds:
       enabled: false
       thresholds:

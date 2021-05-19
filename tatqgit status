@@ -1,0 +1,48 @@
+[1mdiff --git a/bigbluebutton-html5/imports/ui/components/video-provider/container.jsx b/bigbluebutton-html5/imports/ui/components/video-provider/container.jsx[m
+[1mindex 338eb21bb1..4125c86f11 100755[m
+[1m--- a/bigbluebutton-html5/imports/ui/components/video-provider/container.jsx[m
+[1m+++ b/bigbluebutton-html5/imports/ui/components/video-provider/container.jsx[m
+[36m@@ -1,30 +1,18 @@[m
+ import React from 'react';[m
+ import { withTracker } from 'meteor/react-meteor-data';[m
+[31m-import VideoProvider from './component';[m
+[31m-import VideoService from './service';[m
+[31m-import { withLayoutContext } from '/imports/ui/components/layout/context';[m
+[32m+[m[32mimport VideoList from '/imports/ui/components/video-provider/video-list/component';[m
+[32m+[m[32mimport VideoService from '/imports/ui/components/video-provider/service';[m
+ [m
+[31m-const VideoProviderContainer = ({ children, ...props }) => {[m
+[32m+[m[32mconst VideoListContainer = ({ children, ...props }) => {[m
+   const { streams } = props;[m
+[31m-  return (!streams.length ? null : <VideoProvider {...props}>{children}</VideoProvider>);[m
+[32m+[m[32m  return (!streams.length ? null : <VideoList{...props}>{children}</VideoList>);[m
+ };[m
+ [m
+[31m-export default withTracker(props => {[m
+[31m-  // getVideoStreams returns a dictionary consisting of:[m
+[31m-  // {[m
+[31m-  //  streams: array of mapped streams[m
+[31m-  //  totalNumberOfStreams: total number of shared streams in the server[m
+[31m-  // }[m
+[31m-  const {[m
+[31m-    streams,[m
+[31m-    totalNumberOfStreams[m
+[31m-  } = VideoService.getVideoStreams();[m
+[31m-[m
+[31m-  return {[m
+[31m-    swapLayout: props.swapLayout,[m
+[31m-    streams,[m
+[31m-    totalNumberOfStreams,[m
+[31m-    isUserLocked: VideoService.isUserLocked(),[m
+[31m-    currentVideoPageIndex: VideoService.getCurrentVideoPageIndex(),[m
+[31m-  };[m
+[31m-})( withLayoutContext(VideoProviderContainer));[m
+[32m+[m[32mexport default withTracker(props => ({[m
+[32m+[m[32m  streams: props.streams,[m
+[32m+[m[32m  onVideoItemMount: props.onVideoItemMount,[m
+[32m+[m[32m  onVideoItemUnmount: props.onVideoItemUnmount,[m
+[32m+[m[32m  swapLayout: props.swapLayout,[m
+[32m+[m[32m  numberOfPages: VideoService.getNumberOfPages(),[m
+[32m+[m[32m  currentVideoPageIndex: props.currentVideoPageIndex,[m
+[32m+[m[32m}))(VideoListContainer);[m
+\ No newline at end of file[m

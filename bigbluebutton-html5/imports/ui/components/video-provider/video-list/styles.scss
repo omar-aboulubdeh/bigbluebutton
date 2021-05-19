@@ -242,9 +242,13 @@
 .nextPage,
 .previousPage{
   color: var(--color-white);
-  width: var(--md-padding-x);
+  width: 10px;
 
+  background-color: blue;
+  border: solid 4px; 
+  border-radius: 50%; 
   i {
+    right: 2px; 
     [dir="rtl"] & {
       -webkit-transform: scale(-1, 1);
       -moz-transform: scale(-1, 1);

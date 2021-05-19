@@ -88,6 +88,7 @@ class ActionsBar extends PureComponent {
                     : 'raiseHandLabel'
                 }`,
               })}
+              ghost
               accessKey={shortcuts.raisehand}
               color="primary"
               hideLabel

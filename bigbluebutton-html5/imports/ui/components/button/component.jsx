@@ -100,10 +100,10 @@ export default class Button extends BaseButton {
     const propClassNames = {};
 
     propClassNames[styles.button] = true;
-    propClassNames[styles[size]] = true;
+    propClassNames[styles[size]] = true; 
     propClassNames[styles[color]] = true;
     propClassNames[styles.ghost] = ghost;
-    propClassNames[styles.circle] = circle;
+    // propClassNames[styles.circle] = circle;
     propClassNames[styles.block] = block;
 
     return propClassNames;

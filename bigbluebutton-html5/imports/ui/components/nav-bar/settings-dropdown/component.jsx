@@ -89,6 +89,10 @@ const intlMessages = defineMessages({
     id: 'app.navBar.settingsDropdown.endMeetingDesc',
     description: 'Describes settings option closing the current meeting',
   },
+  paginationEnabledLabel: {
+    id: 'app.submenu.application.paginationEnabledLabel',
+    description: 'enable/disable video pagination',
+  },
 });
 
 const propTypes = {
@@ -198,7 +202,7 @@ class SettingsDropdown extends PureComponent {
 
   renderMenuItems() {
     const {
-      intl, mountModal, amIModerator, isBreakoutRoom, isMeteorConnected,
+      intl, mountModal, amIModerator, isBreakoutRoom, isMeteorConnected, togglePagination
     } = this.props;
 
     const allowedToEndMeeting = amIModerator && !isBreakoutRoom;
@@ -227,37 +231,20 @@ class SettingsDropdown extends PureComponent {
     return _.compact([
       this.getFullscreenItem(),
       (<DropdownListItem
-        key="list-item-settings"
-        icon="settings"
+        key="list-item-speaker-view"
+        icon="desktop"
         data-test="settings"
-        label={intl.formatMessage(intlMessages.settingsLabel)}
-        description={intl.formatMessage(intlMessages.settingsDesc)}
-        onClick={() => mountModal(<SettingsMenuContainer />)}
+        label={"Speaker View"}
+        description={intl.formatMessage(intlMessages.paginationEnabledLabel)}
+        onClick={() => togglePagination()}
       />),
       (<DropdownListItem
-        key="list-item-about"
-        icon="about"
-        label={intl.formatMessage(intlMessages.aboutLabel)}
-        description={intl.formatMessage(intlMessages.aboutDesc)}
-        onClick={() => mountModal(<AboutContainer />)}
-      />),
-      !helpButton ? null
-        : (
-          <DropdownListItem
-            key="list-item-help"
-            icon="help"
-            iconRight="popout_window"
-            label={intl.formatMessage(intlMessages.helpLabel)}
-            description={intl.formatMessage(intlMessages.helpDesc)}
-            onClick={() => window.open(`${helpLink}`)}
-          />
-        ),
-      (<DropdownListItem
-        key="list-item-shortcuts"
-        icon="shortcuts"
-        label={intl.formatMessage(intlMessages.hotkeysLabel)}
-        description={intl.formatMessage(intlMessages.hotkeysDesc)}
-        onClick={() => mountModal(<ShortcutHelpComponent />)}
+        key="list-item-gallery-view"
+        icon="video"
+        data-test="settings"
+        label={"Gallery View"}
+        description={intl.formatMessage(intlMessages.paginationEnabledLabel)}
+        onClick={() => togglePagination()}
       />),
       allowedToEndMeeting && isMeteorConnected
         ? (<DropdownListItem

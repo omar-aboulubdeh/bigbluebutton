@@ -10,7 +10,7 @@
   --btn-default-bg: var(--color-white);
   --btn-default-border: var(--color-white);
 
-  --btn-primary-color: var(--color-white);
+  --btn-primary-color: var(--color-primary);
   --btn-primary-bg: var(--color-primary);
   --btn-primary-border: var(--color-primary);
 
@@ -250,7 +250,7 @@
   &:hover,
   .buttonWrapper:hover & {
     color: $color;
-    background-color: $variant;
+    // background-color: $variant;
   }
 }
 
@@ -259,7 +259,7 @@
 }
 
 .primary {
-  @include button-variant(var(--btn-primary-color), var(--btn-primary-bg), var(--btn-primary-border));
+  @include button-variant(var(--btn-primary-color), var(--btn-default-bg), var(--btn-primary-border));
 }
 
 .success {
@@ -297,7 +297,7 @@
   }
 
   &.primary {
-    @include button-ghost-variant(var(--btn-primary-bg), var(--btn-primary-color));
+    @include button-ghost-variant(var(--btn-primary-bg), var(--btn-default-color));
   }
 
   &.success {

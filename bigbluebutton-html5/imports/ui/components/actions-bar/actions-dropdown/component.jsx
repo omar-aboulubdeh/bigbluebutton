@@ -274,6 +274,7 @@ class ActionsDropdown extends PureComponent {
             icon="plus"
             color="primary"
             size="lg"
+            ghost
             circle
             onClick={() => null}
           />

@@ -324,6 +324,7 @@ class PanelManager extends Component {
 
     return (
       <Resizable
+        style={{ order: 2 }}
         minWidth={USERLIST_MIN_WIDTH_PX}
         maxWidth={USERLIST_MAX_WIDTH_PX}
         ref={(node) => { this.resizableUserList = node; }}
@@ -587,7 +588,7 @@ class PanelManager extends Component {
     if (enableResize) {
       panels.push(
         this.renderUserListResizable(),
-        <div className={styles.userlistPad} key={this.padKey} />,
+        <div style={{order:2}} className={styles.userlistPad} key={this.padKey} />,
       );
     } else {
       panels.push(this.renderUserList());

@@ -127,7 +127,7 @@ class NavBar extends Component {
         className={styles.navbar}
       >
         <div className={styles.top}>
-          {amIModerator
+          {/* {amIModerator
             ? (
               <div className={styles.left}>
                 {!isExpanded ? null
@@ -152,7 +152,7 @@ class NavBar extends Component {
                 }
               </div>
             )
-            : null}
+            : null} */}
 
           <div className={styles.left}>
             <Button
@@ -175,7 +175,7 @@ class NavBar extends Component {
             />
           </div>
           <div className={styles.right}>
-            <Button
+            {/* <Button
               onClick={togglePagination}
               ghost
               circle
@@ -184,9 +184,9 @@ class NavBar extends Component {
               aria-label={intl.formatMessage(intlMessages.paginationEnabledLabel)}
               icon="presentation"
               className={cx(toggleBtnClasses)}
-            />
+            /> */}
             {ConnectionStatusService.isEnabled() ? <ConnectionStatusButton /> : null}
-            <SettingsDropdownContainer amIModerator={amIModerator} />
+            <SettingsDropdownContainer togglePagination={togglePagination} amIModerator={amIModerator} />
           </div>
         </div>
         <div className={styles.bottom}>

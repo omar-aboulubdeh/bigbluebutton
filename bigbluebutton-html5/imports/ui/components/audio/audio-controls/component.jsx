@@ -131,7 +131,8 @@ class AudioControls extends PureComponent {
         label={inAudio ? intl.formatMessage(intlMessages.leaveAudio)
           : intl.formatMessage(intlMessages.joinAudio)}
         color={inAudio ? 'primary' : 'default'}
-        ghost={!inAudio}
+        // ghost={!inAudio}
+        ghost
         icon={joinIcon}
         size="lg"
         circle
@@ -195,7 +196,8 @@ class AudioControls extends PureComponent {
         label={label}
         aria-label={label}
         color={!muted ? 'primary' : 'default'}
-        ghost={muted}
+        // ghost={muted}
+        ghost
         icon={muted ? 'mute' : 'unmute'}
         size="lg"
         circle
